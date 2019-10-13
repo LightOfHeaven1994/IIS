@@ -1,4 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h1>Program page</h1>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='program.css')}}">
+  <div class="mtitle">
+    <h1>Program</h1>
+  </div>
+  <div class="program">
+    <div class="filmdesc clear">
+      <div class="left">
+        <div class="img">
+          Picture#1
+        </div>
+      </div>
+      <div class="right">
+        <div class="film-title">
+          Film name
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
