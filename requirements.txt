@@ -1,0 +1,8 @@
+# This file is used by pip to install required python packages
+# Usage: pip install -r requirements.txt
+
+# Flask Framework
+Flask==1.1.1
+
+Flask-WTF==0.14.2
+Flask-SQLAlchemy==2.4.1

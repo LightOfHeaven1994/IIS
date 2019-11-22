@@ -1,9 +1,7 @@
-from flask import Flask, render_template, url_for, flash, redirect
-from forms import RegistrationForm, LoginForm
-
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = '7749a40aa6e1e5d1b179d879aef51844'
+from flask import render_template, url_for, flash, redirect
+from cinema import app
+from cinema.forms import RegistrationForm, LoginForm
+from cinema.models import User
 
 
 @app.route('/')
@@ -41,7 +39,3 @@ def register():
 		flash(f'{form.username.data}, Thanks for registering!', 'success')
 		return redirect(url_for('home'))
 	return render_template('register.html', title='register', form=form)
-
-
-if __name__ == '__main__':
-	app.run(debug=True)
