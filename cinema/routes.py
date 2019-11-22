@@ -1,6 +1,9 @@
+import os
+import secrets
+from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from cinema import app, db, bcrypt
-from cinema.forms import RegistrationForm, LoginForm
+from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm
 from cinema.models import User
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -58,7 +61,35 @@ def logout():
 	return redirect(url_for('home'))
 
 
-@app.route('/account')
+def upload_picture(form_picture):	# generate random name for pic and save it
+	random_hex = secrets.token_hex(8)
+	_, f_ext = os.path.splitext(form_picture.filename)
+	picture_name = random_hex + f_ext
+	picture_path = os.path.join(app.root_path, 'static/profile_picture', picture_name)
+	
+	size = 255, 255
+	im = Image.open(form_picture)
+	im.thumbnail(size)
+	im.save(picture_path)
+
+	return picture_name
+
+
+@app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-	return render_template('account.html', title='Account')
+	form = UpdateAccountForm()
+	if form.validate_on_submit():
+		current_user.username = form.username.data
+		current_user.email = form.email.data
+		if form.picture.data:
+			picture_file = upload_picture(form.picture.data)
+			current_user.profile_picture = picture_file
+		db.session.commit()
+		flash('Your accoun has been updated', 'success')
+		return redirect(url_for('account'))
+	elif request.method == 'GET':
+		form.username.data = current_user.username
+		form.email.data = current_user.email
+	profile_picture = url_for('static', filename='profile_picture/' + current_user.profile_picture)
+	return render_template('account.html', title='Account', profile_picture=profile_picture, form=form)
