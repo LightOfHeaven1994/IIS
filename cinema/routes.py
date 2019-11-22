@@ -1,5 +1,5 @@
 from flask import render_template, url_for, flash, redirect
-from cinema import app
+from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm
 from cinema.models import User
 
@@ -36,6 +36,10 @@ def login():
 def register():
 	form = RegistrationForm()
 	if form.validate_on_submit(): # check if filled data is valid
+		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')	# hash password for user
+		user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+		db.session.add(user)
+		db.session.commit()
 		flash(f'{form.username.data}, Thanks for registering!', 'success')
-		return redirect(url_for('home'))
+		return redirect(url_for('login'))
 	return render_template('register.html', title='register', form=form)
