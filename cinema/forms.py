@@ -60,3 +60,14 @@ class EditUser(FlaskForm):
 		user = User.query.filter_by(username=username.data).first()
 		if not user:
 			raise ValidationError('This user does not exist')
+
+
+class DeleteUser(FlaskForm):
+	username = StringField('Search by username:')
+	search = SubmitField('Search')
+	delete = SubmitField('Delete')
+
+	def validate_username(self, username):	# check if username is already in DB
+		user = User.query.filter_by(username=username.data).first()
+		if not user:
+			raise ValidationError('This user does not exist')

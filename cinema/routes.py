@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from cinema import app, db, bcrypt
-from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser
+from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser
 from cinema.models import User, Event
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -111,11 +111,32 @@ def edit_user():
 		try:
 			if request.form['save']:
 				user.role = form.role.data
-				print(user.role)
 				db.session.commit()
+				form.username.data = ""
 				flash('Saved successfully', 'success')
+				return render_template('deleteuser.html', form=form)
 		except KeyError:
 			pass
 		return render_template('edituser.html',user_name=user_name, user_email=user.email, form=form)
 
 	return render_template('edituser.html', form=form)
+
+
+@app.route('/deleteuser', methods=['GET', 'POST'])
+@login_required
+def delete_user():
+	form = DeleteUser()
+	if form.validate_on_submit():
+		user_name = form.username.data
+		user = User.query.filter_by(username=user_name).first()
+		try:
+			if request.form['delete']:
+				db.session.delete(user)
+				db.session.commit()
+				form.username.data = ""
+				flash('Deleted successfully', 'success')
+				return render_template('deleteuser.html', form=form)
+		except KeyError:
+			pass
+		return render_template('deleteuser.html',user_name=user_name, user_email=user.email, user_role=user.role, form=form)
+	return render_template('deleteuser.html', form=form)

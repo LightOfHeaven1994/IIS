@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h1>Edit user role</h1>
+  <h1>Delete user</h1>
  
   <form method="POST" action="" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
@@ -26,10 +26,9 @@
     {% if user_name %}
       <p class="test-secondary"><b>User name:</b> {{ user_name }}</p>
       <p class="test-secondary"><b>User email:</b> {{ user_email }}</p>
-      <p class="test-secondary"><b>User role:</b></p>
-      {{ form.role(class="form-control form-control-lg input-sm") }} 
+      <p class="test-secondary"><b>User role:</b>{{ user_role }}</p>
       <div class="text-right mb-3">
-        {{ form.save(class="btn btn-outline-info") }}
+        {{ form.delete(class="btn btn-outline-danger") }}
       </div>
     {% endif %}
   </form>
