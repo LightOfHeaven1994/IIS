@@ -9,4 +9,3 @@ Flask-SQLAlchemy==2.4.1
 flask-bcrypt==0.7.1
 flask-login==0.4.
 Pillow==6.2.1
-Flask-Datepicker==0.12
