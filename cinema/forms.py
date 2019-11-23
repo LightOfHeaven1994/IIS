@@ -48,3 +48,15 @@ class UpdateAccountForm(FlaskForm):
 			user = User.query.filter_by(email=email.data).first()
 			if user:
 				raise ValidationError('That email is taken. Please choose a different one')
+
+
+class EditUser(FlaskForm):
+	username = StringField('Search by username:')
+	role = StringField('Role')
+	search = SubmitField('Search')
+	save = SubmitField('Save')
+
+	def validate_username(self, username):	# check if username is already in DB
+		user = User.query.filter_by(username=username.data).first()
+		if not user:
+			raise ValidationError('This user does not exist')

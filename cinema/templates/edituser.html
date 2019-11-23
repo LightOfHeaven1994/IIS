@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>Edit user page</h1>
+ 
+  <form method="POST" action="" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <div class="form-group">
+        {{ form.username.label(class="form-control-label") }}
+
+        {% if form.username.errors %}
+          {{ form.username(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+            {% for error in form.username.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+            </div>
+        {% else %}
+          {{ form.username(class="form-control form-control-lg") }} 
+        {% endif %}
+        <div class="text-right mb-3">
+              {{ form.search(class="btn btn-outline-info") }}
+        </div>
+      </div>
+    </fieldset>
+    {% if user_name %}
+      <p class="test-secondary"><b>User name:</b> {{ user_name }}</p>
+      <p class="test-secondary"><b>User email:</b> {{ user_email }}</p>
+      <p class="test-secondary"><b>User role:</b></p>
+      {{ form.role(class="form-control form-control-lg input-sm") }} 
+      <div class="text-right mb-3">
+        {{ form.save(class="btn btn-outline-info") }}
+      </div>
+    {% endif %}
+  </form>
+{% endblock content %}

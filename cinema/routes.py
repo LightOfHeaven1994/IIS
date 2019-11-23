@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from cinema import app, db, bcrypt
-from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser
 from cinema.models import User, Event
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -93,3 +93,29 @@ def account():
 		form.email.data = current_user.email
 	profile_picture = url_for('static', filename='profile_picture/' + current_user.profile_picture)
 	return render_template('account.html', title='Account', profile_picture=profile_picture, form=form)
+
+
+
+@app.route('/edituser', methods=['GET', 'POST'])
+@login_required
+def edit_user():
+	form = EditUser()
+	if form.validate_on_submit():
+		user_name = form.username.data
+		user = User.query.filter_by(username=user_name).first()
+		try:
+			if request.form['search']:
+				form.role.data = user.role
+		except KeyError:
+			pass
+		try:
+			if request.form['save']:
+				user.role = form.role.data
+				print(user.role)
+				db.session.commit()
+				flash('Saved successfully', 'success')
+		except KeyError:
+			pass
+		return render_template('edituser.html',user_name=user_name, user_email=user.email, form=form)
+
+	return render_template('edituser.html', form=form)
