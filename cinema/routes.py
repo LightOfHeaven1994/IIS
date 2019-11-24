@@ -11,17 +11,17 @@ from flask_login import login_user, current_user, logout_user, login_required
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html')
+	return render_template('home.html')
 
 
 @app.route('/about')
 def about():
-    return render_template('about.html', title='about')
+	return render_template('about.html', title='about')
 
 
 @app.route('/program')
 def program():
-    return render_template('program.html', title='program')
+	return render_template('program.html', title='program')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -29,7 +29,7 @@ def login():
 	if current_user.is_authenticated:
 		return redirect(url_for('home'))
 	form = LoginForm()
-	if form.validate_on_submit(): # check if filled data is valid
+	if form.validate_on_submit():  # check if filled data is valid
 		user = User.query.filter_by(email=form.email.data).first()
 		if user and bcrypt.check_password_hash(user.password, form.password.data):
 			login_user(user, remember=form.remember.data)
@@ -45,8 +45,8 @@ def register():
 	if current_user.is_authenticated:
 		return redirect(url_for('home'))
 	form = RegistrationForm()
-	if form.validate_on_submit(): # check if filled data is valid
-		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')	# hash password for user
+	if form.validate_on_submit():  # check if filled data is valid
+		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')  # hash password for user
 		user = User(username=form.username.data, email=form.email.data, password=hashed_password)
 		db.session.add(user)
 		db.session.commit()
@@ -61,12 +61,12 @@ def logout():
 	return redirect(url_for('home'))
 
 
-def upload_picture(form_picture):	# generate random name for pic and save it
+def upload_picture(form_picture):  # generate random name for pic and save it
 	random_hex = secrets.token_hex(8)
 	_, f_ext = os.path.splitext(form_picture.filename)
 	picture_name = random_hex + f_ext
 	picture_path = os.path.join(app.root_path, 'static/profile_picture', picture_name)
-	
+
 	size = 255, 255
 	im = Image.open(form_picture)
 	im.thumbnail(size)
@@ -95,13 +95,13 @@ def account():
 	return render_template('account.html', title='Account', profile_picture=profile_picture, form=form)
 
 
-
 @app.route('/edituser', methods=['GET', 'POST'])
 @login_required
 def edit_user():
 	form = EditUser()
 	if form.validate_on_submit():
 		user_name = form.username.data
+		user_role=form.role.data
 		user = User.query.filter_by(username=user_name).first()
 		try:
 			if request.form['search']:
@@ -117,7 +117,7 @@ def edit_user():
 				return render_template('deleteuser.html', form=form)
 		except KeyError:
 			pass
-		return render_template('edituser.html',user_name=user_name, user_email=user.email, form=form)
+		return render_template('edituser.html', user_name=user_name, user_email=user.email, form=form,user_role=user.role)
 
 	return render_template('edituser.html', form=form)
 
@@ -138,5 +138,6 @@ def delete_user():
 				return render_template('deleteuser.html', form=form)
 		except KeyError:
 			pass
-		return render_template('deleteuser.html',user_name=user_name, user_email=user.email, user_role=user.role, form=form)
+		return render_template('deleteuser.html', user_name=user_name, user_email=user.email, user_role=user.role,
+							   form=form)
 	return render_template('deleteuser.html', form=form)

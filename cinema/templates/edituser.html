@@ -27,7 +27,13 @@
       <p class="test-secondary"><b>User name:</b> {{ user_name }}</p>
       <p class="test-secondary"><b>User email:</b> {{ user_email }}</p>
       <p class="test-secondary"><b>User role:</b></p>
-      {{ form.role(class="form-control form-control-lg input-sm") }} 
+
+        <select id="inputState" {{ form.role(class="form-control input-sm") }})>
+            <option {% if user_role=="Admin"%} selected {% endif %} >Admin </option>
+            <option {% if user_role=="Redactor"%} selected {% endif %} >Redactor</option>
+            <option {% if user_role=="Cashier"%} selected {% endif %} >Cashier</option>
+            <option {% if user_role=="User"%} selected {% endif %} >User</option>
+        </select>
       <div class="text-right mb-3">
         {{ form.save(class="btn btn-outline-info") }}
       </div>
