@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from cinema import app, db, bcrypt
-from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser
+from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateEvent
 from cinema.models import User, Event
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -11,17 +11,43 @@ from flask_login import login_user, current_user, logout_user, login_required
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html')
+	return render_template('home.html')
 
 
 @app.route('/about')
 def about():
-    return render_template('about.html', title='about')
+    return render_template('about.html')
 
 
 @app.route('/program')
 def program():
-    return render_template('program.html', title='program')
+	form = ShowEvents()
+	if form.validate_on_submit():
+		print("CLICK KURVA")
+		print("KURVA\nKURVA\n")
+		# print(request.form)
+		# print("\n\n")
+		# try:
+		# 	if request.form['create']:
+		# 		return redirect(url_for('createevent'))
+		# except KeyError:
+		# 	pass
+		# try:
+		# 	if request.form['update']:
+		# 		return redirect(url_for('about'))
+		# except KeyError:
+		# 	pass
+		# try:
+		# 	if request.form['delete']:
+		# 		return redirect(url_for('about'))
+		# except KeyError:
+		# 	pass
+	events = Event.query.all()
+	print(events)
+	if events:
+		return render_template('program.html', title='program', events=events, form=form)
+	else:
+		return render_template('program.html', title='program', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -29,7 +55,7 @@ def login():
 	if current_user.is_authenticated:
 		return redirect(url_for('home'))
 	form = LoginForm()
-	if form.validate_on_submit(): # check if filled data is valid
+	if form.validate_on_submit():  # check if filled data is valid
 		user = User.query.filter_by(email=form.email.data).first()
 		if user and bcrypt.check_password_hash(user.password, form.password.data):
 			login_user(user, remember=form.remember.data)
@@ -45,8 +71,8 @@ def register():
 	if current_user.is_authenticated:
 		return redirect(url_for('home'))
 	form = RegistrationForm()
-	if form.validate_on_submit(): # check if filled data is valid
-		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')	# hash password for user
+	if form.validate_on_submit():  # check if filled data is valid
+		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')  # hash password for user
 		user = User(username=form.username.data, email=form.email.data, password=hashed_password)
 		db.session.add(user)
 		db.session.commit()
@@ -61,12 +87,12 @@ def logout():
 	return redirect(url_for('home'))
 
 
-def upload_picture(form_picture):	# generate random name for pic and save it
+def upload_picture(form_picture):  # generate random name for pic and save it
 	random_hex = secrets.token_hex(8)
 	_, f_ext = os.path.splitext(form_picture.filename)
 	picture_name = random_hex + f_ext
 	picture_path = os.path.join(app.root_path, 'static/profile_picture', picture_name)
-	
+
 	size = 255, 255
 	im = Image.open(form_picture)
 	im.thumbnail(size)
@@ -95,14 +121,15 @@ def account():
 	return render_template('account.html', title='Account', profile_picture=profile_picture, form=form)
 
 
-
 @app.route('/edituser', methods=['GET', 'POST'])
 @login_required
 def edit_user():
 	form = EditUser()
 	if form.validate_on_submit():
 		user_name = form.username.data
+		user_role=form.role.data
 		user = User.query.filter_by(username=user_name).first()
+		print(request.form)
 		try:
 			if request.form['search']:
 				form.role.data = user.role
@@ -117,7 +144,7 @@ def edit_user():
 				return render_template('deleteuser.html', form=form)
 		except KeyError:
 			pass
-		return render_template('edituser.html',user_name=user_name, user_email=user.email, form=form)
+		return render_template('edituser.html', user_name=user_name, user_email=user.email, form=form,user_role=user.role)
 
 	return render_template('edituser.html', form=form)
 
@@ -140,3 +167,23 @@ def delete_user():
 			pass
 		return render_template('deleteuser.html',user_name=user_name, user_email=user.email, user_role=user.role, form=form)
 	return render_template('deleteuser.html', form=form)
+
+
+@app.route('/createevent', methods=['GET', 'POST'])
+@login_required
+def create_event():
+	form = CreateEvent()
+	picture_file = url_for('static', filename='profile_picture/default_event.jpg')
+	if form.validate_on_submit():
+		print("HLEDAM PIC")
+		print(form.picture.data)
+		if form.picture.data:
+			picture_file = upload_picture(form.picture.data)
+			print("UPLOAD NEW:" + picture_file)
+		print("DEFAULT PIC:" + picture_file)
+		event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data, 
+			language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
+		db.session.add(event)
+		db.session.commit()
+		flash('Created successfully', 'success')
+	return render_template('createevent.html', title='createevent', picture=picture_file, form=form)
