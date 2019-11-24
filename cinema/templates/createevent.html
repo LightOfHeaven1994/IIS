@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="content-section">
+    <div class="media">
+      <img class="rounded account-img" src="{{ picture }}">
+    </div>
+    <form method="POST" action="">
+      {{ form.hidden_tag() }}
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Create event</legend>
+        <div class="form-group">
+          {{ form.eventname.label(class="form-control-label") }}
+
+          {% if form.eventname.errors %}
+            {{ form.eventname(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+              {% for error in form.eventname.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+              </div>
+          {% else %}
+            {{ form.eventname(class="form-control form-control-lg") }}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ form.event_type.label(class="form-control-label") }}
+
+          {% if form.event_type.errors %}
+            {{ form.event_type(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+              {% for error in form.event_type.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+              </div>
+          {% else %}
+            {{ form.event_type(class="form-control form-control-lg") }}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ form.language.label(class="form-control-label") }}
+
+          {% if form.language.errors %}
+            {{ form.language(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+              {% for error in form.language.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+              </div>
+          {% else %}
+            {{ form.language(class="form-control form-control-lg") }}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ form.duration.label(class="form-control-label") }}
+
+          {% if form.duration.errors %}
+            {{ form.duration(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+              {% for error in form.duration.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+              </div>
+          {% else %}
+            {{ form.duration(class="form-control form-control-lg") }}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ form.age_restriction.label(class="form-control-label") }}
+
+          {% if form.age_restriction.errors %}
+            {{ form.age_restriction(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+              {% for error in form.age_restriction.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+              </div>
+          {% else %}
+            {{ form.age_restriction(class="form-control form-control-lg") }}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ form.picture.label() }}
+          {{ form.picture(class="form-control-file") }}
+          {% if form.picture.errors %}
+            {% for error in form.picture.errors %}
+                <span class="text-danger">{{ error }}</span></br>
+              {% endfor %}
+          {% endif %}
+        </div>
+      </fieldset>
+      <div class="form-group">
+        {{ form.submit(class="btn btn-outline-info") }}
+      </div>
+    </form>
+  </div>
+{% endblock content %}
