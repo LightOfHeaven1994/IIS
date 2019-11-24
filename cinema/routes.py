@@ -174,7 +174,7 @@ def delete_user():
 	return render_template('deleteuser.html', form=form)
 
 
-@app.route('/createevent', methods=['GET', 'POST'])
+@app.route('/program/new', methods=['GET', 'POST'])
 @login_required
 def create_event():
 	form = CreateUpdateEvent()
@@ -193,27 +193,48 @@ def create_event():
 		db.session.add(event)
 		db.session.commit()
 		flash('Created successfully', 'success')
-	return render_template('createevent.html', title='createevent', picture=picture_file, form=form)
+		return redirect(url_for('program'))
+	return render_template('createevent.html', picture=picture_file, form=form, legend='Create new event')
 
 
-# @app.route('/updateevent', methods=['GET', 'POST'])
-# @login_required
-# def update_event():
-# 	form = CreateUpdateEvent()
-# 	if current_user.role != "Admin" and current_user.role != "Redactor":
-# 		abort(403)
-# 	if form.validate_on_submit():
-# 		# current_user.username = form.username.data
-# 		# current_user.email = form.email.data
-# 		# if form.picture.data:
-# 		# 	picture_file = upload_picture(form.picture.data)
-# 		# 	current_user.profile_picture = picture_file
-# 		# db.session.commit()
-# 		# flash('Your accoun has been updated', 'success')
-# 		# return redirect(url_for('account'))
-# 	elif request.method == 'GET':
-		
-# 		# form.username.data = current_user.username
-# 		# form.email.data = current_user.email
-# 	return render_template('updateevent.html', title='updateevent', form=form)
+@app.route('/program/<int:event_id>')
+def event(event_id):
+	event = Event.query.get_or_404(event_id)
+	return render_template('event.html', name=event.name, event=event)
 
+
+@app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])
+@login_required
+def update_event(event_id):
+	event = Event.query.get_or_404(event_id)
+	if current_user.role != "Admin" and current_user.role != "Redactor":
+		abort(403)
+	form = CreateUpdateEvent()
+	if form.validate_on_submit():
+		event.name = form.eventname.data
+		event.event_type = form.event_type.data
+		event.duration = form.duration.data
+		event.language = form.language.data
+		event.age_restriction = form.age_restriction.data
+		db.session.commit()
+		flash('Your event has been updated!', 'success')
+		return redirect(url_for('event', event_id=event.id))
+	elif request.method == 'GET':
+		form.eventname.data = event.name
+		form.event_type.data = event.event_type
+		form.duration.data = event.duration
+		form.language.data = event.language
+		form.age_restriction.data = event.age_restriction
+	return render_template('createevent.html', form=form, legend='Update event')
+
+
+@app.route('/program/<int:event_id>/delete', methods=['POST'])
+@login_required
+def delete_event(event_id):
+	event = Event.query.get_or_404(event_id)
+	if current_user.role != "Admin" and current_user.role != "Redactor":
+		abort(403)
+	db.session.delete(event)
+	db.session.commit()
+	flash('Your event has been deleted!', 'success')
+	return redirect(url_for('program'))

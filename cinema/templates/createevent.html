@@ -7,7 +7,7 @@
     <form method="POST" action="">
       {{ form.hidden_tag() }}
       <fieldset class="form-group">
-        <legend class="border-bottom mb-4">Create event</legend>
+        <legend class="border-bottom mb-4">{{ legend }}</legend>
         <div class="form-group">
           {{ form.eventname.label(class="form-control-label") }}
 
@@ -89,7 +89,11 @@
         </div>
       </fieldset>
       <div class="form-group">
-        {{ form.submit(class="btn btn-outline-info") }}
+        {% if legend == "Create new event" %}
+          {{ form.create(class="btn btn-outline-success") }}
+        {% else %}
+          {{ form.update(class="btn btn-outline-info") }}
+        {% endif %}
       </div>
     </form>
   </div>
