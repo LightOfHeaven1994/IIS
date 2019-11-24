@@ -1,7 +1,7 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateEvent
 from cinema.models import User, Event
@@ -126,6 +126,8 @@ def account():
 @login_required
 def edit_user():
 	form = EditUser()
+	if current_user.role != "Admin":
+		abort(403)
 	if form.validate_on_submit():
 		user_name = form.username.data
 		user_role=form.role.data
@@ -154,6 +156,8 @@ def edit_user():
 @login_required
 def delete_user():
 	form = DeleteUser()
+	if current_user.role != "Admin":
+		abort(403)
 	if form.validate_on_submit():
 		user_name = form.username.data
 		user = User.query.filter_by(username=user_name).first()
