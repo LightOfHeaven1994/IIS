@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from cinema import app, db, bcrypt
-from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateEvent
+from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent
 from cinema.models import User, Event
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -173,7 +173,9 @@ def delete_user():
 @app.route('/createevent', methods=['GET', 'POST'])
 @login_required
 def create_event():
-	form = CreateEvent()
+	form = CreateUpdateEvent()
+	if current_user.role != "Admin" and current_user.role != "Redactor":
+		abort(403)
 	picture_file = url_for('static', filename='profile_picture/default_event.jpg')
 	if form.validate_on_submit():
 		print("HLEDAM PIC")
@@ -188,3 +190,26 @@ def create_event():
 		db.session.commit()
 		flash('Created successfully', 'success')
 	return render_template('createevent.html', title='createevent', picture=picture_file, form=form)
+
+
+# @app.route('/updateevent', methods=['GET', 'POST'])
+# @login_required
+# def update_event():
+# 	form = CreateUpdateEvent()
+# 	if current_user.role != "Admin" and current_user.role != "Redactor":
+# 		abort(403)
+# 	if form.validate_on_submit():
+# 		# current_user.username = form.username.data
+# 		# current_user.email = form.email.data
+# 		# if form.picture.data:
+# 		# 	picture_file = upload_picture(form.picture.data)
+# 		# 	current_user.profile_picture = picture_file
+# 		# db.session.commit()
+# 		# flash('Your accoun has been updated', 'success')
+# 		# return redirect(url_for('account'))
+# 	elif request.method == 'GET':
+		
+# 		# form.username.data = current_user.username
+# 		# form.email.data = current_user.email
+# 	return render_template('updateevent.html', title='updateevent', form=form)
+

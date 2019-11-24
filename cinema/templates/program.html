@@ -1,11 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
-  <form method="POST" enctype="multipart/form-data"> <!-- action="{{ url_for('create_event') }}" -->
-    {{ form.hidden_tag() }}
-    <div class="text-right mb-3">
-      {{ form.create(class="btn btn-outline-success") }} {{ form.update(class="btn btn-outline-info") }} {{ form.delete(class="btn btn-outline-danger") }}
-    </div>
-  </form>
+  {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
+    <form method="POST" enctype="multipart/form-data"> <!-- action="{{ url_for('create_event') }}" -->
+      {{ form.hidden_tag() }}
+        <div class="text-right mb-3">
+          <a class="btn btn-outline-success" href="{{ url_for('create_event') }}">Create event</a>
+<!--           <a class="btn btn-outline-info" href="{{ url_for('update_event') }}">Update</a>
+          <a class="btn btn-outline-danger" href="{{ url_for('home') }}">Delete</a> -->
+        </div>
+    </form>
+  {% endif %}
   {% for event in events %}
   <img class="rounded-circle account-img" src="{{ event.picture }}">
     <div class="media-body">

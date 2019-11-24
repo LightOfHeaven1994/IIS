@@ -73,7 +73,7 @@ class DeleteUser(FlaskForm):
 			raise ValidationError('This user does not exist')
 
 
-class CreateEvent(FlaskForm):
+class CreateUpdateEvent(FlaskForm):
 	eventname = StringField('Event name', validators=[DataRequired(), Length(min=5, max=50)])
 	event_type = StringField('Event type', validators=[DataRequired(), Length(min=5, max=50)])
 	duration = IntegerField(validators=[DataRequired(), NumberRange(min=1, max=400)])
@@ -81,6 +81,7 @@ class CreateEvent(FlaskForm):
 	age_restriction = IntegerField(validators=[DataRequired(), NumberRange(min=1, max=18)])
 	picture = FileField('Upload film picture', validators=[FileAllowed(['jpg', 'img', 'png'])])
 	submit = SubmitField('Create')
+	update = SubmitField('Update')
 
 
 class ShowEvents(FlaskForm):
