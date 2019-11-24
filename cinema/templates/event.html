@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<img class="rounded-circle account-img" src="{{ event.picture }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <div class="text-right mb-3">
+        <a class="btn btn-outline-info" href="{{ url_for('update_event', event_id=event.id) }}">Update event</a>
+        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Delete event</button>
+      </div>
+      <h2 class="article-title">{{ event.name }}</h>
+      <p><b>Type:</b> {{ event.event_type }}</p>
+      <p><b>Duration:</b> {{ event.duration }}</p>
+      <p><b>Age:</b> {{ event.age_restriction }}</p>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Event?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="{{ url_for('delete_event', event_id=event.id) }}" method="POST">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+ 

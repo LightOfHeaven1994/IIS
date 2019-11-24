@@ -80,7 +80,7 @@ class CreateUpdateEvent(FlaskForm):
 	language = StringField('Language', validators=[DataRequired()])
 	age_restriction = IntegerField(validators=[DataRequired(), NumberRange(min=1, max=18)])
 	picture = FileField('Upload film picture', validators=[FileAllowed(['jpg', 'img', 'png'])])
-	submit = SubmitField('Create')
+	create = SubmitField('Create')
 	update = SubmitField('Update')
 
 
