@@ -50,6 +50,7 @@ def program():
 		return render_template('program.html', title='program', form=form)
 
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if current_user.is_authenticated:
