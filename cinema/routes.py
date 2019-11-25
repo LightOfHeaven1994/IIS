@@ -180,20 +180,16 @@ def create_event():
 	form = CreateUpdateEvent()
 	if current_user.role != "Admin" and current_user.role != "Redactor":
 		abort(403)
-	picture_file = url_for('static', filename='profile_picture/default_event.jpg')
 	if form.validate_on_submit():
-		print("HLEDAM PIC")
-		print(form.picture.data)
 		if form.picture.data:
 			picture_file = upload_picture(form.picture.data)
-			print("UPLOAD NEW:" + picture_file)
-		print("DEFAULT PIC:" + picture_file)
 		event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data, 
 			language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
 		db.session.add(event)
 		db.session.commit()
 		flash('Created successfully', 'success')
 		return redirect(url_for('program'))
+	picture_file = url_for('static', filename='profile_picture/default_event.jpg')	# default picture for first time
 	return render_template('createevent.html', picture=picture_file, form=form, legend='Create new event')
 
 
@@ -216,6 +212,10 @@ def update_event(event_id):
 		event.duration = form.duration.data
 		event.language = form.language.data
 		event.age_restriction = form.age_restriction.data
+		# if form.picture.data:
+		# 	print("JE TU FOTKA?")
+		# 	picture_file = upload_picture(form.picture.data)
+		# 	event.picture = picture_file
 		db.session.commit()
 		flash('Your event has been updated!', 'success')
 		return redirect(url_for('event', event_id=event.id))
@@ -225,7 +225,10 @@ def update_event(event_id):
 		form.duration.data = event.duration
 		form.language.data = event.language
 		form.age_restriction.data = event.age_restriction
-	return render_template('createevent.html', form=form, legend='Update event')
+		# form.picture = event.picture
+	event_picture = url_for('static', filename='profile_picture/' + event.picture)
+	print(event.picture)
+	return render_template('createevent.html', form=form, picture=event_picture, legend='Update event') #
 
 
 @app.route('/program/<int:event_id>/delete', methods=['POST'])

@@ -4,10 +4,12 @@
 <img class="rounded-circle account-img" src="{{ event.picture }}">
   <div class="media-body">
     <div class="article-metadata">
-      <div class="text-right mb-3">
-        <a class="btn btn-outline-info" href="{{ url_for('update_event', event_id=event.id) }}">Update event</a>
-        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Delete event</button>
-      </div>
+      {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
+        <div class="text-right mb-3">
+          <a class="btn btn-outline-info" href="{{ url_for('update_event', event_id=event.id) }}">Update event</a>
+          <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Delete event</button>
+        </div>
+      {% endif %}
       <h2 class="article-title">{{ event.name }}</h>
       <p><b>Type:</b> {{ event.event_type }}</p>
       <p><b>Duration:</b> {{ event.duration }}</p>

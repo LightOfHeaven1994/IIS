@@ -88,13 +88,15 @@
           {% endif %}
         </div>
       </fieldset>
-      <div class="form-group">
-        {% if legend == "Create new event" %}
-          {{ form.create(class="btn btn-outline-success") }}
-        {% else %}
-          {{ form.update(class="btn btn-outline-info") }}
-        {% endif %}
-      </div>
+      {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
+        <div class="form-group">
+          {% if legend == "Create new event" %}
+            {{ form.create(class="btn btn-outline-success") }}
+          {% else %}
+            {{ form.update(class="btn btn-outline-info") }}
+          {% endif %}
+        </div>
+      {% endif %}
     </form>
   </div>
 {% endblock content %}
