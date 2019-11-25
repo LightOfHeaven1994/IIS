@@ -10,10 +10,10 @@
           <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Delete event</button>
         </div>
       {% endif %}
-      <h2 class="article-title">{{ event.name }}</h>
+      <h2 class="article-title">{{ event.name }}</h2>
       <p><b>Type:</b> {{ event.event_type }}</p>
       <p><b>Duration:</b> {{ event.duration }}</p>
-      <p><b>Age:</b> {{ event.age_restriction }}</p>
+      <p><b>Age Restriction:</b> {{ event.age_restriction }}+</p>
     </div>
   </div>
   <!-- Modal -->
@@ -35,6 +35,30 @@
       </div>
     </div>
   </div>
+    <form method="POST" action="">
+    {{ form.csrf_token }}
+    <h6>Date</h6>
+          {% if form.date.errors %}
+            {{ form.date(class="form-control is-invalid") }}
+              <div class="invalid-feedback">
+              {% for error in form.date.errors %}
+                <span>Wrong time format, please use: D-M-Y H:M</span>
+              {% endfor %}
+              </div>
+          {% else %}
+            {{ form.date(class="form-control") }}
+          {% endif %}
+    <h6>Hall</h6>
+        <select id="inputState" {{ form.hall(class="form-control input-sm") }})>
+            <option selected> Blue Hall </option>
+            <option selected> Red Hall </option>
+            <option selected> Green Hall </option>
+        </select>
+    {{ form.create(class="btn btn-outline-info") }}
 
+    {% for date in dates %}
+<p>{{ date.date }}</p>
+    {% endfor %}
+        </form>
 {% endblock content %}
  

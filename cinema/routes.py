@@ -3,8 +3,8 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
-from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent
-from cinema.models import User, Event
+from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate
+from cinema.models import User, Event, Date, Event_data
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -144,7 +144,7 @@ def edit_user():
 				db.session.commit()
 				form.username.data = ""
 				flash('Saved successfully', 'success')
-				return render_template('deleteuser.html', form=form)
+				return render_template('edituser.html', form=form)
 		except KeyError:
 			pass
 		return render_template('edituser.html', user_name=user_name, user_email=user.email, form=form,user_role=user.role)
@@ -180,23 +180,39 @@ def create_event():
 	form = CreateUpdateEvent()
 	if current_user.role != "Admin" and current_user.role != "Redactor":
 		abort(403)
+
+	picture_file = url_for('static', filename='profile_picture/default_event.jpg')  # default picture for first time
 	if form.validate_on_submit():
 		if form.picture.data:
 			picture_file = upload_picture(form.picture.data)
-		event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data, 
+		event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
 			language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
 		db.session.add(event)
 		db.session.commit()
 		flash('Created successfully', 'success')
 		return redirect(url_for('program'))
-	picture_file = url_for('static', filename='profile_picture/default_event.jpg')	# default picture for first time
 	return render_template('createevent.html', picture=picture_file, form=form, legend='Create new event')
 
 
-@app.route('/program/<int:event_id>')
+@app.route('/program/<int:event_id>',methods=['GET','POST'])
 def event(event_id):
+	form=CreateDate()
 	event = Event.query.get_or_404(event_id)
-	return render_template('event.html', name=event.name, event=event)
+	if form.validate_on_submit():
+		print("heeeeeeeeeeeeeeee")
+		date= Date(date=form.date.data)
+		db.session.add(date)
+		db.session.commit()
+		flash('Added successfully', 'success')
+		dates = Date.query.filter(Event.alldates.any(id==id)).all()
+		return render_template('event.html', form=form, event=event,dates=dates)
+	else:
+		dates = Date.query.filter(Event.alldates.any(id==id)).all()
+		print(dates)
+		if dates:
+			return render_template('event.html', name=event.name, event=event,form=form,dates=dates)
+		else:
+			return render_template('event.html', name=event.name, event=event, form=form)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])

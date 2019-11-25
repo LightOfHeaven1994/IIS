@@ -30,7 +30,7 @@
             <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
           </div>
           <div class="navbar-nav">
-            {% if current_user.username == "admin" %} <!-- Admin can manage users -->
+            {% if current_user.role == "Admin" %} <!-- Admin can manage users -->
               <div class="dropdown show">
               <a class="btn dropdown-toggle" style="color:#cbd5db" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Manage users
