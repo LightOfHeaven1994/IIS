@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate
-from cinema.models import User, Event, Date, Event_data
+from cinema.models import User, Event, Date, Event_data, Hall
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -43,11 +43,11 @@ def program():
 		# except KeyError:
 		# 	pass
 	events = Event.query.all()
-	print(events)
+	halls = Hall.query.all()
 	if events:
-		return render_template('program.html', title='program', events=events, form=form)
+		return render_template('program.html', title='program', events=events, halls=halls, form=form)
 	else:
-		return render_template('program.html', title='program', form=form)
+		return render_template('program.html', title='program', halls=halls, form=form)
 
 
 
@@ -180,8 +180,7 @@ def create_event():
 	form = CreateUpdateEvent()
 	if current_user.role != "Admin" and current_user.role != "Redactor":
 		abort(403)
-
-	picture_file = url_for('static', filename='profile_picture/default_event.jpg')  # default picture for first time
+	picture_file = url_for('static', filename='profile_picture/default_event.jpg')	# default picture for first time
 	if form.validate_on_submit():
 		if form.picture.data:
 			picture_file = upload_picture(form.picture.data)
@@ -243,7 +242,6 @@ def update_event(event_id):
 		form.age_restriction.data = event.age_restriction
 		# form.picture = event.picture
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
-	print(event.picture)
 	return render_template('createevent.html', form=form, picture=event_picture, legend='Update event') #
 
 
