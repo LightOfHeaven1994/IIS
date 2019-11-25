@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateTimeField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
 from cinema.models import User
 
@@ -74,11 +74,11 @@ class DeleteUser(FlaskForm):
 
 
 class CreateUpdateEvent(FlaskForm):
-	eventname = StringField('Event name', validators=[DataRequired(), Length(min=5, max=50)])
+	eventname = StringField('Event name', validators=[DataRequired(), Length(min=3, max=50)])
 	event_type = StringField('Event type', validators=[DataRequired(), Length(min=5, max=50)])
-	duration = IntegerField(validators=[DataRequired(), NumberRange(min=1, max=400)])
-	language = StringField('Language', validators=[DataRequired()])
-	age_restriction = IntegerField(validators=[DataRequired(), NumberRange(min=1, max=18)])
+	duration = StringField(validators=[DataRequired(), Length(min=5, max=50)])
+	language = StringField('Language', validators=[DataRequired(), Length(min=2, max=50)])
+	age_restriction = IntegerField(validators=[DataRequired(), NumberRange(min=0, max=18)])
 	picture = FileField('Upload film picture', validators=[FileAllowed(['jpg', 'img', 'png'])])
 	create = SubmitField('Create')
 	update = SubmitField('Update')
@@ -88,3 +88,9 @@ class ShowEvents(FlaskForm):
 	create = SubmitField('Create')
 	update = SubmitField('Update')
 	delete = SubmitField('Delete')
+
+
+class CreateDate(FlaskForm):
+	date = DateTimeField('Date',format='%d-%m-%Y %H:%M')
+	hall = StringField('Hall')
+	create = SubmitField('Create')
