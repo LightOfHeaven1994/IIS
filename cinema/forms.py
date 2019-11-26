@@ -93,4 +93,5 @@ class ShowEvents(FlaskForm):
 class CreateDate(FlaskForm):
 	date = DateTimeField('Date',format='%d-%m-%Y %H:%M')
 	hall = StringField('Hall')
+	seat = BooleanField()
 	create = SubmitField('Create')

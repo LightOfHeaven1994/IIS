@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
 	reservations = db.relationship('Reservation')
 
 	def __repr__(self):
-		return f"User('{self.username}', '{self.email}', {self.role})"
+		return f"User('{self.username}', '{self.email}', '{self.role}', '{self.profile_picture}')"
 
 
 class Reservation(db.Model):
@@ -52,7 +52,7 @@ class Event(db.Model):
 
 
 	def __repr__(self):
-		return f"Event('{self.name}, {self.event_type}, {self.duration}, {self.language}, {self.age_restriction}')"
+		return f"Event('{self.name}, {self.event_type}, {self.duration}, {self.language}, {self.age_restriction}', {self.picture})"
 
 
 # hall_date = db.Table('hall_date', db.Column('hall_id', db.Integer, db.ForeignKey('hall.id')),

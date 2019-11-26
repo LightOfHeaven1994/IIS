@@ -31,7 +31,7 @@
       <div class="tab-pane fade" id="hall_1" role="tabpanel" aria-labelledby="hall_1-tab">
         {% for date in dates %}
           {% if date.alldates_in_hall[0].hall_name == "Green Hall" %}
-            <img class="rounded-circle account-img" src="{{ date.alldates[0].picture }}">
+            <img class="rounded-circle account-img" src="{{ url_for('static', filename='profile_picture/' + date.alldates[0].picture) }}">
             <div class="media-body">
               <div class="article-metadata">
                 <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id, hall_color='Green Hall', event_time=date.date) }}">{{ date.alldates[0].name }}</a>
@@ -44,7 +44,7 @@
       <div class="tab-pane fade" id="hall_2" role="tabpanel" aria-labelledby="hall_2-tab">
         {% for date in dates %}
           {% if date.alldates_in_hall[0].hall_name == "Red Hall" %}
-            <img class="rounded-circle account-img" src="{{ date.alldates[0].picture }}">
+            <img class="rounded-circle account-img" src="{{ url_for('static', filename='profile_picture/' + date.alldates[0].picture) }}">
             <div class="media-body">
               <div class="article-metadata">
                 <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id, hall_color='Red Hall', event_time=date.date) }}">{{ date.alldates[0].name }}</a>
@@ -57,7 +57,7 @@
       <div class="tab-pane fade" id="hall_3" role="tabpanel" aria-labelledby="hall_3-tab">
         {% for date in dates %}
           {% if date.alldates_in_hall[0].hall_name == "Blue Hall" %}
-            <img class="rounded-circle account-img" src="{{ date.alldates[0].picture }}">
+            <img class="rounded-circle account-img" src="{{ url_for('static', filename='profile_picture/' + date.alldates[0].picture) }}">
             <div class="media-body">
               <div class="article-metadata">
                 <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id, hall_color='Blue Hall', event_time=date.date)}}">{{ date.alldates[0].name }}</a>
@@ -70,7 +70,7 @@
       {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
         <div class="tab-pane fade" id="event_details" role="tabpanel" aria-labelledby="event_details-tab">
           {% for event in events %}
-            <img class="rounded-circle account-img" src="{{ event.picture }}">
+            <img class="rounded-circle account-img" src="{{ url_for('static', filename='profile_picture/' + event.picture) }}">
             <div class="media-body">
               <div class="article-metadata">
                 <a class="mr-2" href="{{ url_for('event_Parent', event_id=event.id ) }}">{{ event.name }}</a>

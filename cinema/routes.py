@@ -180,7 +180,7 @@ def create_event():
 	picture_file = url_for('static', filename='profile_picture/default_event.jpg')	# default picture for first time
 	if form.validate_on_submit():
 		try:
-			if form.picture.data:
+			if form.picture.data:	
 				picture_file = upload_picture(form.picture.data)
 			event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
 				language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
@@ -200,6 +200,7 @@ def event_Parent(event_id):
 	form=CreateDate()
 	parent=True
 	event = Event.query.get_or_404(event_id)
+	event_picture = url_for('static', filename='profile_picture/' + event.picture)
 	if form.validate_on_submit():
 		hall_name = Hall(hall_name=form.hall.data)
 		date= Date(date=form.date.data)
@@ -257,10 +258,9 @@ def update_event(event_id):
 		event.language = form.language.data
 		event.age_restriction = form.age_restriction.data
 
-		# if form.picture.data:
-		# 	print("JE TU FOTKA?")
-		# 	picture_file = upload_picture(form.picture.data)
-		# 	event.picture = picture_file
+		if form.picture.data:
+			picture_file = upload_picture(form.picture.data)
+			event.picture = picture_file
 		db.session.commit()
 		flash('Your event has been updated!', 'success')
 		return redirect(url_for('event', event_id=event.id, hall_color='Default', event_time='0000-00-00 00:00'))
@@ -270,7 +270,6 @@ def update_event(event_id):
 		form.duration.data = event.duration
 		form.language.data = event.language
 		form.age_restriction.data = event.age_restriction
-		# form.picture = event.picture
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
 	return render_template('createevent.html', form=form, picture=event_picture, legend='Update event') #
 
