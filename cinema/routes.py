@@ -217,17 +217,19 @@ def event_Parent(event_id):
 			occasions=[]
 			for hall,date in zip(halls,dates):
 				occasions.append(hall.hall_name+" at "+date.date)
-			return render_template('event.html', form=form, event=event, occasions=occasions, parent=parent )
+			event_picture = url_for('static', filename='profile_picture/' + event.picture)
+			return render_template('event.html', form=form, event=event, occasions=occasions, picture=event_picture, parent=parent )
 	else:
 		halls = event.halls_of_event.all()
 		dates = event.dates_of_event.all()
 		occasions = []
 		for hall, date in zip(halls, dates):
 			occasions.append(hall.hall_name + " at " + date.date)
+		event_picture = url_for('static', filename='profile_picture/' + event.picture)
 		if dates and halls:
-			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, parent=parent)
+			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, picture=event_picture, parent=parent)
 		else:
-			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, parent=parent)
+			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, picture=event_picture, parent=parent)
 
 
 
@@ -238,10 +240,11 @@ def event(event_id, hall_color, event_time):
 	hall_name = Hall(hall_name=form.hall.data)
 	halls = hall_name.dates_for_hall
 	dates = event.dates_of_event
+	event_picture = url_for('static', filename='profile_picture/' + event.picture)
 	if dates and halls:
-		return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color, event_time=event_time)
+		return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color, picture=event_picture, event_time=event_time)
 	else:
-		return render_template('event.html', name=event.name, event=event, form=form, hall_color=hall_color, event_time=event_time)
+		return render_template('event.html', name=event.name, event=event, form=form, hall_color=hall_color, event_time=event_time, picture=event_picture)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])

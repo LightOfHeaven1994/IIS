@@ -41,7 +41,7 @@ hashed_password = bcrypt.generate_password_hash("test").decode('utf-8')  # hash 
 user_1 = User(username="test", email="test@test.com", password=hashed_password, role="User")
 db.session.add(user_1)
 
-event = Event(name="Zamyla oznuk", event_type="Bye bye party", duration=120, language="kz", age_restriction=18)
+event = Event(name="Zamyla oznuk", event_type="Bye bye party", duration="120min", language="kz", age_restriction=18)
 db.session.add(event)
 
 db.session.commit()
