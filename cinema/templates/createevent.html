@@ -4,7 +4,7 @@
     <div class="media">
       <img class="rounded account-img" src="{{ picture }}">
     </div>
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
       {{ form.hidden_tag() }}
       <fieldset class="form-group">
         <legend class="border-bottom mb-4">{{ legend }}</legend>
@@ -83,8 +83,8 @@
           {{ form.picture(class="form-control-file") }}
           {% if form.picture.errors %}
             {% for error in form.picture.errors %}
-                <span class="text-danger">{{ error }}</span></br>
-              {% endfor %}
+              <span class="text-danger">{{ error }}</span></br>
+            {% endfor %}
           {% endif %}
         </div>
       </fieldset>

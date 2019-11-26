@@ -176,7 +176,7 @@ def create_event():
 	picture_file = url_for('static', filename='profile_picture/default_event.jpg')	# default picture for first time
 	if form.validate_on_submit():
 		try:
-			if form.picture.data:
+			if form.picture.data:	
 				picture_file = upload_picture(form.picture.data)
 			event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
 				language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
@@ -194,6 +194,7 @@ def create_event():
 def event(event_id, hall_color, event_time):
 	form=CreateDate()
 	event = Event.query.get_or_404(event_id)
+	event_picture = url_for('static', filename='profile_picture/' + event.picture)
 	if form.validate_on_submit():
 		hall_name = Hall(hall_name=form.hall.data)
 		db.session.add(hall_name)
@@ -205,18 +206,18 @@ def event(event_id, hall_color, event_time):
 		flash('Added successfully', 'success')
 		if current_user.role == "Admin" or current_user.role == "Redactor":
 			dates=event.dates_of_event.all()
-			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color, event_time=event_time)
+			return render_template('event.html', form=form, event=event, picture=event_picture, dates=dates, hall_color=hall_color, event_time=event_time)
 		else:
 			dates = Date.query.all()
-			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color, event_time=event_time)
+			return render_template('event.html', form=form, event=event, picture=event_picture, dates=dates, hall_color=hall_color, event_time=event_time)
 	else:
 		hall_name = Hall(hall_name=form.hall.data)
 		halls = hall_name.dates_for_hall
 		dates = event.dates_of_event
 		if dates:
-			return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color, event_time=event_time)
+			return render_template('event.html', name=event.name, event=event, picture=event_picture, hall=halls, form=form, dates=dates, hall_color=hall_color, event_time=event_time)
 		else:
-			return render_template('event.html', name=event.name, event=event, form=form, hall_color=hall_color, event_time=event_time)
+			return render_template('event.html', name=event.name, event=event, picture=event_picture, form=form, hall_color=hall_color, event_time=event_time)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])
@@ -233,10 +234,9 @@ def update_event(event_id):
 		event.language = form.language.data
 		event.age_restriction = form.age_restriction.data
 
-		# if form.picture.data:
-		# 	print("JE TU FOTKA?")
-		# 	picture_file = upload_picture(form.picture.data)
-		# 	event.picture = picture_file
+		if form.picture.data:
+			picture_file = upload_picture(form.picture.data)
+			event.picture = picture_file
 		db.session.commit()
 		flash('Your event has been updated!', 'success')
 		return redirect(url_for('event', event_id=event.id, hall_color='Default', event_time='0000-00-00 00:00'))
@@ -246,7 +246,6 @@ def update_event(event_id):
 		form.duration.data = event.duration
 		form.language.data = event.language
 		form.age_restriction.data = event.age_restriction
-		# form.picture = event.picture
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
 	return render_template('createevent.html', form=form, picture=event_picture, legend='Update event') #
 
