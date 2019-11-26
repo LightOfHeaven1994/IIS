@@ -28,10 +28,11 @@ def program():
 
 	dates = Date.query.all()
 
-	for date in dates:
-		print("\n\nBLADSKY KONTROL:")
-		print(date.alldates[0])
-		print(date.alldates_in_hall[0])
+	# if dates:
+	# 	for date in dates:
+	# 		print("\n\nBLADSKY KONTROL:")
+	# 		print(date.alldates[0])
+	# 		print(date.alldates_in_hall[0])
 
 	events = Event.query.all()
 	halls = Hall.query.all()
@@ -189,8 +190,8 @@ def create_event():
 	return render_template('createevent.html', picture=picture_file, form=form, legend='Create new event')
 
 
-@app.route('/program/<int:event_id><string:hall_color>',methods=['GET','POST'])
-def event(event_id, hall_color):
+@app.route('/program/<int:event_id>/<string:hall_color>/<string:event_time>',methods=['GET','POST'])
+def event(event_id, hall_color, event_time):
 	form=CreateDate()
 	event = Event.query.get_or_404(event_id)
 	if form.validate_on_submit():
@@ -204,18 +205,18 @@ def event(event_id, hall_color):
 		flash('Added successfully', 'success')
 		if current_user.role == "Admin" or current_user.role == "Redactor":
 			dates=event.dates_of_event.all()
-			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color)
+			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color, event_time=event_time)
 		else:
 			dates = Date.query.all()
-			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color)
+			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color, event_time=event_time)
 	else:
 		hall_name = Hall(hall_name=form.hall.data)
 		halls = hall_name.dates_for_hall
 		dates = event.dates_of_event
 		if dates:
-			return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color)
+			return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color, event_time=event_time)
 		else:
-			return render_template('event.html', name=event.name, event=event, form=form, hall_color=hall_color)
+			return render_template('event.html', name=event.name, event=event, form=form, hall_color=hall_color, event_time=event_time)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])
@@ -231,6 +232,7 @@ def update_event(event_id):
 		event.duration = form.duration.data
 		event.language = form.language.data
 		event.age_restriction = form.age_restriction.data
+
 		# if form.picture.data:
 		# 	print("JE TU FOTKA?")
 		# 	picture_file = upload_picture(form.picture.data)

@@ -16,7 +16,7 @@
       <p><b>Age Restriction:</b> {{ event.age_restriction }}+</p>
       {% if current_user.role == "User" or current_user.role == "Cashier" %}
         {% for date in dates %}
-          {% if date.alldates[0].id == event.id and hall_color == date.alldates_in_hall[0].hall_name %}
+          {% if date.alldates[0].id == event.id and hall_color == date.alldates_in_hall[0].hall_name and event_time == date.date %}
             <p><b>Time:</b> {{ date.date }}</p>
             <p><b>Hall:</b> {{ date.alldates_in_hall[0].hall_name }}</p>
           {% endif %}
