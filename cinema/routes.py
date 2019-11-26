@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate
-from cinema.models import User, Event, Date, event_date, Hall
+from cinema.models import User, Event, Date, event_hall, Hall
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -25,27 +25,19 @@ def program():
 	if form.validate_on_submit():
 		print("CLICK KURVA")
 		print("KURVA\nKURVA\n")
-		# print(request.form)
-		# print("\n\n")
-		# try:
-		# 	if request.form['create']:
-		# 		return redirect(url_for('createevent'))
-		# except KeyError:
-		# 	pass
-		# try:
-		# 	if request.form['update']:
-		# 		return redirect(url_for('about'))
-		# except KeyError:
-		# 	pass
-		# try:
-		# 	if request.form['delete']:
-		# 		return redirect(url_for('about'))
-		# except KeyError:
-		# 	pass
+
+	dates = Date.query.all()
+
+	for date in dates:
+		print("\n\nBLADSKY KONTROL:")
+		print(date.alldates[0])
+		print(date.alldates_in_hall[0])
+
 	events = Event.query.all()
 	halls = Hall.query.all()
 	if events:
-		return render_template('program.html', title='program', events=events, halls=halls, form=form)
+		print("SEND DATA")
+		return render_template('program.html', title='program', events=events, dates=dates, halls=halls, form=form)
 	else:
 		return render_template('program.html', title='program', halls=halls, form=form)
 
@@ -182,40 +174,48 @@ def create_event():
 		abort(403)
 	picture_file = url_for('static', filename='profile_picture/default_event.jpg')	# default picture for first time
 	if form.validate_on_submit():
-		if form.picture.data:
-			picture_file = upload_picture(form.picture.data)
-		event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
-			language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
-		db.session.add(event)
-		db.session.commit()
-		flash('Created successfully', 'success')
-		return redirect(url_for('program'))
+		try:
+			if form.picture.data:
+				picture_file = upload_picture(form.picture.data)
+			event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
+				language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
+			db.session.add(event)
+			db.session.commit()
+			flash('Created successfully', 'success')
+			return redirect(url_for('program'))
+		except:
+			db.session().rollback()
+			flash('Event should be unique', 'danger')
 	return render_template('createevent.html', picture=picture_file, form=form, legend='Create new event')
 
 
-@app.route('/program/<int:event_id>',methods=['GET','POST'])
-def event(event_id):
+@app.route('/program/<int:event_id><string:hall_color>',methods=['GET','POST'])
+def event(event_id, hall_color):
 	form=CreateDate()
 	event = Event.query.get_or_404(event_id)
 	if form.validate_on_submit():
-
 		hall_name = Hall(hall_name=form.hall.data)
 		db.session.add(hall_name)
-
 		date= Date(date=form.date.data)
 		db.session.add(date)
 		event.dates_of_event.append(date)
+		hall_name.dates_for_hall.append(date)
 		db.session.commit()
 		flash('Added successfully', 'success')
-		dates=event.dates_of_event.all()
-		return render_template('event.html', form=form, event=event,dates=dates)
-	else:
-		dates = event.dates_of_event
-		print(dates)
-		if dates:
-			return render_template('event.html', name=event.name, event=event, hall=hall_name, form=form, dates=dates)
+		if current_user.role == "Admin" or current_user.role == "Redactor":
+			dates=event.dates_of_event.all()
+			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color)
 		else:
-			return render_template('event.html', name=event.name, event=event, form=form)
+			dates = Date.query.all()
+			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color)
+	else:
+		hall_name = Hall(hall_name=form.hall.data)
+		halls = hall_name.dates_for_hall
+		dates = event.dates_of_event
+		if dates:
+			return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color)
+		else:
+			return render_template('event.html', name=event.name, event=event, form=form, hall_color=hall_color)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])

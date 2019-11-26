@@ -15,8 +15,12 @@
       <p><b>Duration:</b> {{ event.duration }}</p>
       <p><b>Age Restriction:</b> {{ event.age_restriction }}+</p>
       {% if current_user.role == "User" or current_user.role == "Cashier" %}
-        <p><b>Time:</b> {{ dates.date }}</p>
-        <p><b>Hall:</b> {{ hall.hall_name }}</p>
+        {% for date in dates %}
+          {% if date.alldates[0].id == event.id and hall_color == date.alldates_in_hall[0].hall_name %}
+            <p><b>Time:</b> {{ date.date }}</p>
+            <p><b>Hall:</b> {{ date.alldates_in_hall[0].hall_name }}</p>
+          {% endif %}
+        {% endfor %}
       {% endif %}
     </div>
   </div>
@@ -103,9 +107,13 @@
         </select>
     {{ form.create(class="btn btn-outline-info") }}
 
-    {% for date in dates %}
+    <!-- {% for date in dates %}
       <p>{{ date.date }}</p>
     {% endfor %}
+
+    {% for hall in halls %}
+      <p>{{ hall.date }}</p>
+    {% endfor %} -->
         </form>
   {% endif %}
 {% endblock content %}

@@ -36,13 +36,12 @@ class Ticket(db.Model):
 	seats = db.relationship('Seat')
 
 
-event_date = db.Table('event_date', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
-	 db.Column('date_id', db.Integer, db.ForeignKey('date.id')))
+# event_date = db.Table('event_date', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
+# 	 db.Column('date_id', db.Integer, db.ForeignKey('date.id')))
 
-
-Event_data = db.Table('Event_Data', db.Model.metadata, 
-	db.Column('events_id', db.Integer, db.ForeignKey('events.id')),
-	db.Column('dates_id', db.Integer, db.ForeignKey('dates.id')))
+event_hall = db.Table('event_hall', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
+	db.Column('date_id', db.Integer, db.ForeignKey('date.id')), 
+	db.Column('hall_id', db.Integer, db.ForeignKey('hall.id')))
 
 
 class Event(db.Model):
@@ -59,12 +58,17 @@ class Event(db.Model):
 		return f"Event('{self.name}, {self.event_type}, {self.duration}, {self.language}, {self.age_restriction}')"
 
 
+# hall_date = db.Table('hall_date', db.Column('hall_id', db.Integer, db.ForeignKey('hall.id')),
+# 	db.Column('date_id', db.Integer, db.ForeignKey('date.id')))
+
 
 class Date(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.String(13), nullable=False)
-	alldates = db.relationship('Event', secondary=event_date,
-							 backref=db.backref('dates_of_event',lazy='dynamic'))
+	alldates = db.relationship('Event', secondary=event_hall,
+							backref=db.backref('dates_of_event',lazy='dynamic'))
+	alldates_in_hall = db.relationship('Hall', secondary=event_hall,
+							backref=db.backref('dates_for_hall', lazy='dynamic'))
 
   
 class Hall(db.Model):
