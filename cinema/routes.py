@@ -198,14 +198,12 @@ def event(event_id):
 	form=CreateDate()
 	event = Event.query.get_or_404(event_id)
 	if form.validate_on_submit():
-		print("heeeeeeeeeeeeeeee")
 		date= Date(date=form.date.data)
 		db.session.add(date)
 		event.dates_of_event.append(date)
 		db.session.commit()
 		flash('Added successfully', 'success')
 		dates=event.dates_of_event.all()
-		print (dates)
 		return render_template('event.html', form=form, event=event,dates=dates)
 	else:
 		dates = event.dates_of_event
