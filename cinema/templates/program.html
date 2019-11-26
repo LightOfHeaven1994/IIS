@@ -5,23 +5,23 @@
     <form method="POST" enctype="multipart/form-data">
       {{ form.hidden_tag() }}
         <div class="text-right mb-3">
-          <a class="btn btn-outline-success" href="{{ url_for('create_event') }}">Create event</a>
+          <a class="btn btn-outline-success" onclick="" href="{{ url_for('create_event') }}">Create event</a>
         </div>
     </form>
   {% endif %}
   <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item waves-effect waves-light">
-        <a class="nav-link" id="hall_1-tab" data-toggle="tab" href="#hall_1" role="tab" aria-controls="hall_1" aria-selected="false"> {{ halls[0].hall_name }}</a>
+        <a class="nav-link" id="hall_1-tab" data-toggle="tab" href="#hall_1" role="tab" aria-controls="hall_1" aria-selected="false"> {{ halls[0] }}</a>
       </li>
       <li class="nav-item waves-effect waves-light">
-        <a class="nav-link" id="hall_2-tab" data-toggle="tab" href="#hall_2" role="tab" aria-controls="hall_2" aria-selected="false"> {{ halls[1].hall_name }}</a>
+        <a class="nav-link" id="hall_2-tab" data-toggle="tab" href="#hall_2" role="tab" aria-controls="hall_2" aria-selected="false"> {{ halls[1] }}</a>
       </li>
       <li class="nav-item waves-effect waves-light">
-        <a class="nav-link" id="hall_3-tab" data-toggle="tab" href="#hall_3" role="tab" aria-controls="hall_3" aria-selected="false"> {{ halls[2].hall_name }}</a>
+        <a class="nav-link" id="hall_3-tab" data-toggle="tab" href="#hall_3" role="tab" aria-controls="hall_3" aria-selected="false"> {{ halls[2] }}</a>
       </li>
       {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
       <li class="nav-item waves-effect waves-light">
-        <a class="nav-link" id="undefined_events-tab" data-toggle="tab" href="#undefined_events" role="tab" aria-controls="undefined_events" aria-selected="false"> Undefined events</a>
+        <a class="nav-link" id="event_details-tab" data-toggle="tab" href="#event_details" role="tab" aria-controls="event_details" aria-selected="false"> Event details</a>
       </li>
       {% endif %}
   </ul>
@@ -68,12 +68,12 @@
         {% endfor %}
       </div>
       {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
-        <div class="tab-pane fade" id="undefined_events" role="tabpanel" aria-labelledby="undefined_events-tab">
+        <div class="tab-pane fade" id="event_details" role="tabpanel" aria-labelledby="event_details-tab">
           {% for event in events %}
             <img class="rounded-circle account-img" src="{{ event.picture }}">
             <div class="media-body">
               <div class="article-metadata">
-                <a class="mr-2" href="{{ url_for('event', event_id=event.id, hall_color='Default', event_time='0000-00-00 00:00') }}">{{ event.name }}</a>
+                <a class="mr-2" href="{{ url_for('event_Parent', event_id=event.id ) }}">{{ event.name }}</a>
                 <p><b>Type:</b> {{ event.event_type }}</p>
                 <p><b>Duration:</b> {{ event.duration }}</p>
                 <p><b>Age:</b> {{ event.age_restriction }}</p>
