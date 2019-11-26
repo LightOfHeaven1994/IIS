@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate
-from cinema.models import User, Event, Date, event_date, Hall
+from cinema.models import User, Event, Date, event_hall, Hall
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -25,27 +25,19 @@ def program():
 	if form.validate_on_submit():
 		print("CLICK KURVA")
 		print("KURVA\nKURVA\n")
-		# print(request.form)
-		# print("\n\n")
-		# try:
-		# 	if request.form['create']:
-		# 		return redirect(url_for('createevent'))
-		# except KeyError:
-		# 	pass
-		# try:
-		# 	if request.form['update']:
-		# 		return redirect(url_for('about'))
-		# except KeyError:
-		# 	pass
-		# try:
-		# 	if request.form['delete']:
-		# 		return redirect(url_for('about'))
-		# except KeyError:
-		# 	pass
+
+	dates = Date.query.all()
+
+	for date in dates:
+		print("\n\nBLADSKY KONTROL:")
+		print(date.alldates[0].name)
+		print(date.alldates_in_hall[0].hall_name)
+
 	events = Event.query.all()
 	halls = Hall.query.all()
 	if events:
-		return render_template('program.html', title='program', events=events, halls=halls, form=form)
+		print("SEND DATA")
+		return render_template('program.html', title='program', events=events, dates=dates, halls=halls, form=form)
 	else:
 		return render_template('program.html', title='program', halls=halls, form=form)
 
@@ -204,16 +196,35 @@ def event(event_id):
 
 		date= Date(date=form.date.data)
 		db.session.add(date)
+
 		event.dates_of_event.append(date)
+		hall_name.dates_for_hall.append(date)
+
+		# halls = hall_name.dates_for_hall.all()
+		# print("\nTRY TO FIND")
+		# for hall in halls:
+		# 	print(hall)	# this is date that connected with Hall
+
 		db.session.commit()
+
+		# print(date.alldates)
+		# print(date.alldates_in_hall)
+
+
+
+
 		flash('Added successfully', 'success')
 		dates=event.dates_of_event.all()
-		return render_template('event.html', form=form, event=event,dates=dates)
+		return render_template('event.html', form=form, event=event, dates=dates)
 	else:
+		hall_name = Hall(hall_name=form.hall.data)
+		halls = hall_name.dates_for_hall
 		dates = event.dates_of_event
+		print("\nWITHOUT SUBMIT HALLS AND DATES:")
+		print(halls)
 		print(dates)
 		if dates:
-			return render_template('event.html', name=event.name, event=event, hall=hall_name, form=form, dates=dates)
+			return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates)
 		else:
 			return render_template('event.html', name=event.name, event=event, form=form)
 
