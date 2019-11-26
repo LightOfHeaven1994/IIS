@@ -199,17 +199,19 @@ def event(event_id):
 	event = Event.query.get_or_404(event_id)
 	if form.validate_on_submit():
 		print("heeeeeeeeeeeeeeee")
+		hall_name = Hall(hall_name=form.hall.data)
+		db.session.add(hall_name)
 		date= Date(date=form.date.data)
 		db.session.add(date)
 		db.session.commit()
 		flash('Added successfully', 'success')
-		dates = Date.query.filter(Event.alldates.any(id==id)).all()
-		return render_template('event.html', form=form, event=event,dates=dates)
+		dates = Date.query.all()
+		return render_template('event.html', form=form, event=event, dates=dates)
 	else:
-		dates = Date.query.filter(Event.alldates.any(id==id)).all()
-		print(dates)
+		hall_name = Hall(hall_name=form.hall.data)
+		dates = Date.query.all()
 		if dates:
-			return render_template('event.html', name=event.name, event=event,form=form,dates=dates)
+			return render_template('event.html', name=event.name, event=event, hall=hall_name, form=form, dates=dates)
 		else:
 			return render_template('event.html', name=event.name, event=event, form=form)
 

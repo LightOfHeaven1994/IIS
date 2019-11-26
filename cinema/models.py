@@ -20,8 +20,6 @@ class User(db.Model, UserMixin):
 	def __repr__(self):
 		return f"User('{self.username}', '{self.email}', {self.role})"
 
-Event_data = db.Table('Hall_Event', db.Column('id', db.Integer, db.ForeignKey('events.id')),
-	 db.Column('id', db.Integer, db.ForeignKey('dates.id')))
 
 class Reservation(db.Model):
 
@@ -39,6 +37,12 @@ class Ticket(db.Model):
 
 
 
+
+Event_data = db.Table('Event_Data', db.Model.metadata, 
+	db.Column('events_id', db.Integer, db.ForeignKey('events.id')),
+	db.Column('dates_id', db.Integer, db.ForeignKey('dates.id')))
+
+
 class Event(db.Model):
 	__tablename__ = 'events'
 	id = db.Column(db.Integer, primary_key=True)
@@ -49,10 +53,11 @@ class Event(db.Model):
 	language = db.Column(db.String(10), nullable=False)
 	age_restriction = db.Column(db.Integer(), nullable=False)
 	alldates = db.relationship('Date', secondary=Event_data,
-							 backref=db.backref('dates'))
+							backref=db.backref('dates'))
 
 	def __repr__(self):
 		return f"Event('{self.name}, {self.event_type}, {self.duration}, {self.language}, {self.age_restriction}')"
+
 
 
 class Date(db.Model):
@@ -63,11 +68,11 @@ class Date(db.Model):
   
 class Hall(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	number = db.Column(db.Integer, nullable=False)
+	hall_name = db.Column(db.String(30), nullable=False)
 	seats = db.relationship('Seat')
 
 	def __repr__(self):
-		return f"Hall('{self.number}')"
+		return f"Hall('{self.hall_name}')"
 
 
 class Seat(db.Model):

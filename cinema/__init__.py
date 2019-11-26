@@ -22,8 +22,10 @@ from cinema.models import User, Event, Hall, Seat
 db.drop_all()
 db.create_all()
 
-for i in range(3):
-	hall = Hall(number=i)
+halls = ['Green Hall', 'Red Hall', 'Blue Hall']
+
+for i in halls:
+	hall = Hall(hall_name=i)
 	db.session.add(hall)
 
 for y in range(3):
