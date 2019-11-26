@@ -198,6 +198,10 @@ def event(event_id):
 	form=CreateDate()
 	event = Event.query.get_or_404(event_id)
 	if form.validate_on_submit():
+
+		hall_name = Hall(hall_name=form.hall.data)
+		db.session.add(hall_name)
+
 		date= Date(date=form.date.data)
 		db.session.add(date)
 		event.dates_of_event.append(date)
@@ -209,7 +213,7 @@ def event(event_id):
 		dates = event.dates_of_event
 		print(dates)
 		if dates:
-			return render_template('event.html', name=event.name, event=event,form=form,dates=dates)
+			return render_template('event.html', name=event.name, event=event, hall=hall_name, form=form, dates=dates)
 		else:
 			return render_template('event.html', name=event.name, event=event, form=form)
 

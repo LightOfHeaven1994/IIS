@@ -14,6 +14,10 @@
       <p><b>Type:</b> {{ event.event_type }}</p>
       <p><b>Duration:</b> {{ event.duration }}</p>
       <p><b>Age Restriction:</b> {{ event.age_restriction }}+</p>
+      {% if current_user.role == "User" or current_user.role == "Cashier" %}
+        <p><b>Time:</b> {{ dates.date }}</p>
+        <p><b>Hall:</b> {{ hall.hall_name }}</p>
+      {% endif %}
     </div>
   </div>
 
@@ -77,6 +81,7 @@
       </div>
     </div>
   </div>
+  {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
     <form method="POST" action="">
     {{ form.csrf_token }}
     <h6>Date</h6>
@@ -99,8 +104,9 @@
     {{ form.create(class="btn btn-outline-info") }}
 
     {% for date in dates %}
-<p>{{ date.date }}</p>
+      <p>{{ date.date }}</p>
     {% endfor %}
         </form>
+  {% endif %}
 {% endblock content %}
  

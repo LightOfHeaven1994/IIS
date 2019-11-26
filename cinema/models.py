@@ -39,6 +39,12 @@ class Ticket(db.Model):
 event_date = db.Table('event_date', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
 	 db.Column('date_id', db.Integer, db.ForeignKey('date.id')))
 
+
+Event_data = db.Table('Event_Data', db.Model.metadata, 
+	db.Column('events_id', db.Integer, db.ForeignKey('events.id')),
+	db.Column('dates_id', db.Integer, db.ForeignKey('dates.id')))
+
+
 class Event(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(60), unique=True, nullable=False)
@@ -48,8 +54,10 @@ class Event(db.Model):
 	language = db.Column(db.String(10), nullable=False)
 	age_restriction = db.Column(db.Integer(), nullable=False)
 
+
 	def __repr__(self):
 		return f"Event('{self.name}, {self.event_type}, {self.duration}, {self.language}, {self.age_restriction}')"
+
 
 
 class Date(db.Model):
@@ -61,11 +69,11 @@ class Date(db.Model):
   
 class Hall(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	number = db.Column(db.Integer, nullable=False)
+	hall_name = db.Column(db.String(30), nullable=False)
 	seats = db.relationship('Seat')
 
 	def __repr__(self):
-		return f"Hall('{self.number}')"
+		return f"Hall('{self.hall_name}')"
 
 
 class Seat(db.Model):
