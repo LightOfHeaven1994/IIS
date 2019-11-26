@@ -20,8 +20,6 @@ class User(db.Model, UserMixin):
 	def __repr__(self):
 		return f"User('{self.username}', '{self.email}', {self.role})"
 
-Event_data = db.Table('Hall_Event', db.Column('id', db.Integer, db.ForeignKey('events.id')),
-	 db.Column('id', db.Integer, db.ForeignKey('dates.id')))
 
 class Reservation(db.Model):
 
@@ -38,9 +36,10 @@ class Ticket(db.Model):
 	seats = db.relationship('Seat')
 
 
+event_date = db.Table('event_date', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
+	 db.Column('date_id', db.Integer, db.ForeignKey('date.id')))
 
 class Event(db.Model):
-	__tablename__ = 'events'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(60), unique=True, nullable=False)
 	picture = db.Column(db.String(20), nullable=False, default='default_event.jpg')
@@ -48,17 +47,16 @@ class Event(db.Model):
 	duration = db.Column(db.Integer, nullable=False)
 	language = db.Column(db.String(10), nullable=False)
 	age_restriction = db.Column(db.Integer(), nullable=False)
-	alldates = db.relationship('Date', secondary=Event_data,
-							 backref=db.backref('dates'))
 
 	def __repr__(self):
 		return f"Event('{self.name}, {self.event_type}, {self.duration}, {self.language}, {self.age_restriction}')"
 
 
 class Date(db.Model):
-	__tablename__ = 'dates'
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.String(13), nullable=False)
+	alldates = db.relationship('Event', secondary=event_date,
+							 backref=db.backref('dates_of_event',lazy='dynamic'))
 
   
 class Hall(db.Model):

@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate
-from cinema.models import User, Event, Date, Event_data, Hall
+from cinema.models import User, Event, Date, event_date, Hall
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -201,12 +201,14 @@ def event(event_id):
 		print("heeeeeeeeeeeeeeee")
 		date= Date(date=form.date.data)
 		db.session.add(date)
+		event.dates_of_event.append(date)
 		db.session.commit()
 		flash('Added successfully', 'success')
-		dates = Date.query.filter(Event.alldates.any(id==id)).all()
+		dates=event.dates_of_event.all()
+		print (dates)
 		return render_template('event.html', form=form, event=event,dates=dates)
 	else:
-		dates = Date.query.filter(Event.alldates.any(id==id)).all()
+		dates = event.dates_of_event
 		print(dates)
 		if dates:
 			return render_template('event.html', name=event.name, event=event,form=form,dates=dates)
