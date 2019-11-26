@@ -239,7 +239,7 @@ def update_event(event_id):
 		# 	event.picture = picture_file
 		db.session.commit()
 		flash('Your event has been updated!', 'success')
-		return redirect(url_for('event', event_id=event.id))
+		return redirect(url_for('event', event_id=event.id, hall_color='Default', event_time='0000-00-00 00:00'))
 	elif request.method == 'GET':
 		form.eventname.data = event.name
 		form.event_type.data = event.event_type
