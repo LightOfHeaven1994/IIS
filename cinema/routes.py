@@ -30,8 +30,8 @@ def program():
 
 	for date in dates:
 		print("\n\nBLADSKY KONTROL:")
-		print(date.alldates[0].name)
-		print(date.alldates_in_hall[0].hall_name)
+		print(date.alldates[0])
+		print(date.alldates_in_hall[0])
 
 	events = Event.query.all()
 	halls = Hall.query.all()
@@ -174,59 +174,48 @@ def create_event():
 		abort(403)
 	picture_file = url_for('static', filename='profile_picture/default_event.jpg')	# default picture for first time
 	if form.validate_on_submit():
-		if form.picture.data:
-			picture_file = upload_picture(form.picture.data)
-		event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
-			language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
-		db.session.add(event)
-		db.session.commit()
-		flash('Created successfully', 'success')
-		return redirect(url_for('program'))
+		try:
+			if form.picture.data:
+				picture_file = upload_picture(form.picture.data)
+			event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
+				language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
+			db.session.add(event)
+			db.session.commit()
+			flash('Created successfully', 'success')
+			return redirect(url_for('program'))
+		except:
+			db.session().rollback()
+			flash('Event should be unique', 'danger')
 	return render_template('createevent.html', picture=picture_file, form=form, legend='Create new event')
 
 
-@app.route('/program/<int:event_id>',methods=['GET','POST'])
-def event(event_id):
+@app.route('/program/<int:event_id><string:hall_color>',methods=['GET','POST'])
+def event(event_id, hall_color):
 	form=CreateDate()
 	event = Event.query.get_or_404(event_id)
 	if form.validate_on_submit():
-
 		hall_name = Hall(hall_name=form.hall.data)
 		db.session.add(hall_name)
-
 		date= Date(date=form.date.data)
 		db.session.add(date)
-
 		event.dates_of_event.append(date)
 		hall_name.dates_for_hall.append(date)
-
-		# halls = hall_name.dates_for_hall.all()
-		# print("\nTRY TO FIND")
-		# for hall in halls:
-		# 	print(hall)	# this is date that connected with Hall
-
 		db.session.commit()
-
-		# print(date.alldates)
-		# print(date.alldates_in_hall)
-
-
-
-
 		flash('Added successfully', 'success')
-		dates=event.dates_of_event.all()
-		return render_template('event.html', form=form, event=event, dates=dates)
+		if current_user.role == "Admin" or current_user.role == "Redactor":
+			dates=event.dates_of_event.all()
+			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color)
+		else:
+			dates = Date.query.all()
+			return render_template('event.html', form=form, event=event, dates=dates, hall_color=hall_color)
 	else:
 		hall_name = Hall(hall_name=form.hall.data)
 		halls = hall_name.dates_for_hall
 		dates = event.dates_of_event
-		print("\nWITHOUT SUBMIT HALLS AND DATES:")
-		print(halls)
-		print(dates)
 		if dates:
-			return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates)
+			return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color)
 		else:
-			return render_template('event.html', name=event.name, event=event, form=form)
+			return render_template('event.html', name=event.name, event=event, form=form, hall_color=hall_color)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])

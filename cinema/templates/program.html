@@ -2,32 +2,41 @@
 {% block content %}
   
   {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
-    <h1>ERRRRRRRR</h1>
     <form method="POST" enctype="multipart/form-data">
       {{ form.hidden_tag() }}
         <div class="text-right mb-3">
           <a class="btn btn-outline-success" href="{{ url_for('create_event') }}">Create event</a>
         </div>
     </form>
-
+  {% endif %}
   <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item waves-effect waves-light">
-        <a class="nav-link active" id="hall_1-tab" data-toggle="tab" href="#hall_1" role="tab" aria-controls="hall_1" aria-selected="false"> {{ halls[0].hall_name }}</a>
+        <a class="nav-link" id="hall_1-tab" data-toggle="tab" href="#hall_1" role="tab" aria-controls="hall_1" aria-selected="false"> {{ halls[0].hall_name }}</a>
       </li>
       <li class="nav-item waves-effect waves-light">
         <a class="nav-link" id="hall_2-tab" data-toggle="tab" href="#hall_2" role="tab" aria-controls="hall_2" aria-selected="false"> {{ halls[1].hall_name }}</a>
       </li>
       <li class="nav-item waves-effect waves-light">
-        <a class="nav-link" id="hall_3-tab" data-toggle="tab" href="#hall_3" role="tab" aria-controls="hall_3" aria-selected="true"> {{ halls[2].hall_name }}</a>
+        <a class="nav-link" id="hall_3-tab" data-toggle="tab" href="#hall_3" role="tab" aria-controls="hall_3" aria-selected="false"> {{ halls[2].hall_name }}</a>
       </li>
+      {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
+      <li class="nav-item waves-effect waves-light">
+        <a class="nav-link" id="undefined_events-tab" data-toggle="tab" href="#undefined_events" role="tab" aria-controls="undefined_events" aria-selected="false"> Undefined events</a>
+      </li>
+      {% endif %}
   </ul>
+
+<!--   {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
   <div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade" id="hall_1" role="tabpanel" aria-labelledby="hall_1-tab">
-      {% for event in events %}
+    <div class="tab-pane fade" id="hall_1" role="tabpanel" aria-labelledby="hall_1-tab"></div>
+    <div class="tab-pane fade" id="hall_2" role="tabpanel" aria-labelledby="hall_2-tab">Sal 2</div>
+    <div class="tab-pane fade" id="hall_3" role="tabpanel" aria-labelledby="hall_3-tab">Sal 3</div>
+    <div class="tab-pane fade" id="undefined_events" role="tabpanel" aria-labelledby="undefined_events-tab">
+       {% for event in events %}
         <img class="rounded-circle account-img" src="{{ event.picture }}">
         <div class="media-body">
           <div class="article-metadata">
-            <a class="mr-2" href="{{ url_for('event', event_id=event.id) }}">{{ event.name }}</a>
+            <a class="mr-2" href="{{ url_for('event', event_id=event.id, hall_color='Default') }}">{{ event.name }}</a>
             <p><b>Type:</b> {{ event.event_type }}</p>
             <p><b>Duration:</b> {{ event.duration }}</p>
             <p><b>Age:</b> {{ event.age_restriction }}</p>
@@ -35,70 +44,67 @@
         </div>
       {% endfor %}
     </div>
-    <div class="tab-pane fade" id="hall_2" role="tabpanel" aria-labelledby="hall_2-tab">Sal 2</div>
-    <div class="tab-pane fade" id="hall_3" role="tabpanel" aria-labelledby="hall_3-tab">Sal 3</div>   
   </div>
-  {% endif %}
+  {% endif %} -->
 
 
 
-
-  {% if dates and (current_user.role != "Admin" and current_user.role != "Redactor") %}
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item waves-effect waves-light">
-          <a class="nav-link" id="hall_1-tab" data-toggle="tab" href="#hall_1" role="tab" aria-controls="hall_1" aria-selected="false"> {{ halls[0].hall_name }}</a>
-        </li>
-        <li class="nav-item waves-effect waves-light">
-          <a class="nav-link" id="hall_2-tab" data-toggle="tab" href="#hall_2" role="tab" aria-controls="hall_2" aria-selected="false"> {{ halls[1].hall_name }}</a>
-        </li>
-        <li class="nav-item waves-effect waves-light">
-          <a class="nav-link" id="hall_3-tab" data-toggle="tab" href="#hall_3" role="tab" aria-controls="hall_3" aria-selected="false"> {{ halls[2].hall_name }}</a>
-        </li>
-    </ul>
-
-
-    <div class="tab-content" id="myTabContent">
-      {% for date in dates %}
-        {% if date.alldates_in_hall[0].hall_name == "Green Hall" %}
-          <div class="tab-pane fade" id="hall_1" role="tabpanel" aria-labelledby="hall_1-tab">
+    <div class="tab-content" id="UserContent">
+      <div class="tab-pane fade" id="hall_1" role="tabpanel" aria-labelledby="hall_1-tab">
+        {% for date in dates %}
+          {% if date.alldates_in_hall[0].hall_name == "Green Hall" %}
             <img class="rounded-circle account-img" src="{{ date.alldates[0].picture }}">
             <div class="media-body">
               <div class="article-metadata">
-                <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id) }}">{{ date.alldates[0].name }}</a>
-                <p><b>Type:</b> {{ date.alldates[0].event_type }}</p>
-                <p><b>Duration:</b> {{ date.alldates[0].duration }}</p>
-                <p><b>Age:</b> {{ date.alldates[0].age_restriction }}</p>
+                <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id, hall_color='Green Hall') }}">{{ date.alldates[0].name }}</a>
+                <p><b>Time:</b> {{ date.date }}</p>
               </div>
             </div>
-          </div>
-        {% elif date.alldates_in_hall[0].hall_name == "Red Hall" %}
-          <div class="tab-pane fade" id="hall_2" role="tabpanel" aria-labelledby="hall_2-tab">
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="tab-pane fade" id="hall_2" role="tabpanel" aria-labelledby="hall_2-tab">
+        {% for date in dates %}
+          {% if date.alldates_in_hall[0].hall_name == "Red Hall" %}
             <img class="rounded-circle account-img" src="{{ date.alldates[0].picture }}">
             <div class="media-body">
               <div class="article-metadata">
-                <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id) }}">{{ date.alldates[0].name }}</a>
-                <p><b>Type:</b> {{ date.alldates[0].event_type }}</p>
-                <p><b>Duration:</b> {{ date.alldates[0].duration }}</p>
-                <p><b>Age:</b> {{ date.alldates[0].age_restriction }}</p>
+                <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id, hall_color='Red Hall') }}">{{ date.alldates[0].name }}</a>
+                <p><b>Time:</b> {{ date.date }}</p>
               </div>
             </div>
-          </div>
-        {% elif date.alldates_in_hall[0].hall_name == "Blue Hall" %}
-          <div class="tab-pane fade" id="hall_3" role="tabpanel" aria-labelledby="hall_3-tab">
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="tab-pane fade" id="hall_3" role="tabpanel" aria-labelledby="hall_3-tab">
+        {% for date in dates %}
+          {% if date.alldates_in_hall[0].hall_name == "Blue Hall" %}
             <img class="rounded-circle account-img" src="{{ date.alldates[0].picture }}">
             <div class="media-body">
               <div class="article-metadata">
-                <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id) }}">{{ date.alldates[0].name }}</a>
-                <p><b>Type:</b> {{ date.alldates[0].event_type }}</p>
-                <p><b>Duration:</b> {{ date.alldates[0].duration }}</p>
-                <p><b>Age:</b> {{ date.alldates[0].age_restriction }}</p>
+                <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id, hall_color='Blue Hall')}}">{{ date.alldates[0].name }}</a>
+                <p><b>Time:</b> {{ date.date }}</p>
               </div>
             </div>
-          </div>
-        {% endif %}
-      {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
+        <div class="tab-pane fade" id="undefined_events" role="tabpanel" aria-labelledby="undefined_events-tab">
+          {% for event in events %}
+            <img class="rounded-circle account-img" src="{{ event.picture }}">
+            <div class="media-body">
+              <div class="article-metadata">
+                <a class="mr-2" href="{{ url_for('event', event_id=event.id, hall_color='Default') }}">{{ event.name }}</a>
+                <p><b>Type:</b> {{ event.event_type }}</p>
+                <p><b>Duration:</b> {{ event.duration }}</p>
+                <p><b>Age:</b> {{ event.age_restriction }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
     </div>
-  {% endif %}
 
   
 
