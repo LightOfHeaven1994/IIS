@@ -36,11 +36,15 @@ def program():
 
 	events = Event.query.all()
 	halls = Hall.query.all()
+	all_halls=[]
+	for hall in halls:
+		all_halls.append(hall.hall_name)
+
 	if events:
 		print("SEND DATA")
-		return render_template('program.html', title='program', events=events, dates=dates, halls=halls, form=form)
+		return render_template('program.html', title='program', events=events, dates=dates, halls=all_halls, form=form)
 	else:
-		return render_template('program.html', title='program', halls=halls, form=form)
+		return render_template('program.html', title='program', halls=all_halls, form=form)
 
 
 
@@ -190,34 +194,54 @@ def create_event():
 	return render_template('createevent.html', picture=picture_file, form=form, legend='Create new event')
 
 
-@app.route('/program/<int:event_id>/<string:hall_color>/<string:event_time>',methods=['GET','POST'])
-def event(event_id, hall_color, event_time):
+
+@app.route('/program/<int:event_id>',methods=['GET','POST'])
+def event_Parent(event_id):
 	form=CreateDate()
+	parent=True
 	event = Event.query.get_or_404(event_id)
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
 	if form.validate_on_submit():
 		hall_name = Hall(hall_name=form.hall.data)
-		db.session.add(hall_name)
 		date= Date(date=form.date.data)
 		db.session.add(date)
-		event.dates_of_event.append(date)
+		db.session.add(hall_name)
 		hall_name.dates_for_hall.append(date)
+		event.dates_of_event.append(date)
+		event.halls_of_event.append(hall_name)
 		db.session.commit()
 		flash('Added successfully', 'success')
 		if current_user.role == "Admin" or current_user.role == "Redactor":
 			dates=event.dates_of_event.all()
-			return render_template('event.html', form=form, event=event, picture=event_picture, dates=dates, hall_color=hall_color, event_time=event_time)
-		else:
-			dates = Date.query.all()
-			return render_template('event.html', form=form, event=event, picture=event_picture, dates=dates, hall_color=hall_color, event_time=event_time)
+			halls = event.halls_of_event.all()
+			occasions=[]
+			for hall,date in zip(halls,dates):
+				occasions.append(hall.hall_name+" at "+date.date)
+			return render_template('event.html', form=form, event=event, occasions=occasions, parent=parent )
 	else:
-		hall_name = Hall(hall_name=form.hall.data)
-		halls = hall_name.dates_for_hall
-		dates = event.dates_of_event
-		if dates:
-			return render_template('event.html', name=event.name, event=event, picture=event_picture, hall=halls, form=form, dates=dates, hall_color=hall_color, event_time=event_time)
+		halls = event.halls_of_event.all()
+		dates = event.dates_of_event.all()
+		occasions = []
+		for hall, date in zip(halls, dates):
+			occasions.append(hall.hall_name + " at " + date.date)
+		if dates and halls:
+			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, parent=parent)
 		else:
-			return render_template('event.html', name=event.name, event=event, picture=event_picture, form=form, hall_color=hall_color, event_time=event_time)
+			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, parent=parent)
+
+
+
+@app.route('/program/<int:event_id>/<string:hall_color>/<string:event_time>',methods=['GET','POST'])
+def event(event_id, hall_color, event_time):
+	form=CreateDate()
+	event = Event.query.get_or_404(event_id)
+	hall_name = Hall(hall_name=form.hall.data)
+	halls = hall_name.dates_for_hall
+	dates = event.dates_of_event
+	if dates and halls:
+		return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color, event_time=event_time)
+	else:
+		return render_template('event.html', name=event.name, event=event, form=form, hall_color=hall_color, event_time=event_time)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])

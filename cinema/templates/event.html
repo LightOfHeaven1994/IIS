@@ -1,13 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
 
+
 <img class="rounded-circle account-img" src="{{ picture }}">
+    {% if not parent %}
+    <a href="{{ url_for('event_Parent',event_id=event.id) }}">Event Details</a>
+    {% endif %}
+
   <div class="media-body">
     <div class="article-metadata">
       {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
         <div class="text-right mb-3">
+        {% if parent %}
           <a class="btn btn-outline-info" href="{{ url_for('update_event', event_id=event.id) }}">Update event</a>
           <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Delete event</button>
+        {% endif %}
         </div>
       {% endif %}
       <h2 class="article-title">{{ event.name }}</h2>
@@ -25,10 +32,7 @@
     </div>
   </div>
 
-  <form method="post">
-    {{ form.hidden_tag() }}
-    {{ form.seat() }}
-</form>
+{% if not parent %}
   <!-- Select by HALL -->
   <table style="width:20%" align="center">
     <tr>
@@ -67,7 +71,7 @@
   </table>
   <a class="btn btn-outline-success float-right" href="#">Reserve</a>
 
-
+{% endif %}
 
 
   <!-- Modal -->
@@ -89,6 +93,7 @@
       </div>
     </div>
   </div>
+  {% if parent %}
   {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
     <form method="POST" action="">
     {{ form.csrf_token }}
@@ -111,7 +116,12 @@
         </select>
     {{ form.create(class="btn btn-outline-success") }}
 
+    {% for occassion in occasions %}
+      <p>{{ occassion }}</p>
+    {% endfor %}
+
         </form>
   {% endif %}
+    {% endif %}
 {% endblock content %}
  

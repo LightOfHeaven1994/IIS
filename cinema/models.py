@@ -36,9 +36,6 @@ class Ticket(db.Model):
 	seats = db.relationship('Seat')
 
 
-# event_date = db.Table('event_date', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
-# 	 db.Column('date_id', db.Integer, db.ForeignKey('date.id')))
-
 event_hall = db.Table('event_hall', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
 	db.Column('date_id', db.Integer, db.ForeignKey('date.id')), 
 	db.Column('hall_id', db.Integer, db.ForeignKey('hall.id')))
@@ -75,6 +72,9 @@ class Hall(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	hall_name = db.Column(db.String(30), nullable=False)
 	seats = db.relationship('Seat')
+	events_in_hall = db.relationship('Event', secondary=event_hall,
+							backref=db.backref('halls_of_event', lazy='dynamic'))
+
 
 	def __repr__(self):
 		return f"Hall('{self.hall_name}')"
