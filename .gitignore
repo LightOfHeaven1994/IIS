@@ -1,4 +1,4 @@
 /cinema/__pycache__
 /cinema/site.db
-/cinema/static/profile_picture
-!/cinema/static/profile_picture/default.jpg
+/cinema/static/profile_picture/*
+!/cinema/static/profile_picture/default

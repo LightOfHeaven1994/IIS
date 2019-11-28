@@ -1,10 +1,11 @@
+import re
 import os
 import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate
-from cinema.models import User, Event, Date, event_hall, Hall
+from cinema.models import User, Event, Date, event_hall, Hall, Seat, Ticket
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -240,11 +241,65 @@ def event(event_id, hall_color, event_time):
 	hall_name = Hall(hall_name=form.hall.data)
 	halls = hall_name.dates_for_hall
 	dates = event.dates_of_event
+	seats_status = []
+
+	if form.validate_on_submit():
+		if not current_user.is_authenticated:
+			flash('Before reservation you need to create account', 'warning')
+			return redirect(url_for('register'))
+
+		print("\n\nSeats:")
+		if request.form.getlist('seat'):
+			seats = request.form.getlist('seat')
+			print(seats)
+			# get indexes for reservation
+			row_number = []
+			for seat in seats:
+				row_number.append(re.split(r'_', seat))
+
+			all_seats = Seat.query.all()
+			ticket = Ticket(price=len(seats)*120, user_id=current_user.id)	# let's define prices for halls?
+			db.session.add(ticket)
+			db.session.commit()
+
+			db.session.add(current_user)
+			for index in row_number:
+				for seat in all_seats:
+					if int(index[0]) == seat.row and int(index[1]) == seat.number:
+						seat.is_busy = "disabled"
+						seat.ticket_id = ticket.id
+						print("TRY ADD TICKET")
+						print(ticket.id)
+						db.session.add(seat)
+						break;
+			db.session.commit()
+			
+
+		flash('Reserved successfully', 'success')
+		return redirect(url_for('program'))
+
+	print("HOW MANY TICKETS DO I HAVE")
+	print(current_user.tickets)
+
+	if(current_user.tickets):
+		print("TICKET PRICE")
+		print(current_user.tickets[0].price)
+		print("HOW MANY SEATS HAVE TICKET")
+		print(current_user.tickets[0].seats)
+
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
-	if dates and halls:
-		return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color, picture=event_picture, event_time=event_time)
-	else:
-		return render_template('event.html', name=event.name, event=event, form=form, hall_color=hall_color, event_time=event_time, picture=event_picture)
+
+	all_seats = [seat.is_busy for seat in Seat.query.all()]
+	row_1 = all_seats[0:6]
+	row_2 = all_seats[6:12]
+	row_3 = all_seats[12:18]
+	seats_status.append(row_1)
+	seats_status.append(row_2)
+	seats_status.append(row_3)
+		
+
+	return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color, 
+		picture=event_picture, event_time=event_time, seats_status=seats_status)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])

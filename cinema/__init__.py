@@ -9,6 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 
 bcrypt = Bcrypt(app)
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
@@ -28,9 +29,20 @@ for i in halls:
 	hall = Hall(hall_name=i)
 	db.session.add(hall)
 
-for y in range(3):
-	for i in range(3):
-		seat = Seat(row=y, number=i, hall_id=1)
+# initialize 6 seats 3 rows
+for y in range(1, 4):
+	for i in range(1, 7):
+		seat = Seat(row=y, number=i, hall_id=1, is_busy="")
+		db.session.add(seat)
+
+for y in range(1, 4):
+	for i in range(1, 7):
+		seat = Seat(row=y, number=i, hall_id=2, is_busy="")
+		db.session.add(seat)
+
+for y in range(1, 4):
+	for i in range(1, 7):
+		seat = Seat(row=y, number=i, hall_id=3, is_busy="")
 		db.session.add(seat)
 
 hashed_password = bcrypt.generate_password_hash("admin").decode('utf-8')  # hash password for user
@@ -41,7 +53,7 @@ hashed_password = bcrypt.generate_password_hash("test").decode('utf-8')  # hash 
 user_1 = User(username="test", email="test@test.com", password=hashed_password, role="User")
 db.session.add(user_1)
 
-event = Event(name="Zamyla oznuk", event_type="Bye bye party", duration="120min", language="kz", age_restriction=18)
+event = Event(name ="No chances even on 5BIT", event_type="Thanks IIS for oznuk", duration="cely zivot", language="kz", age_restriction=18)
 db.session.add(event)
 
 db.session.commit()

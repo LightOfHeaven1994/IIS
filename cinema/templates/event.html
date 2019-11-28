@@ -32,44 +32,35 @@
     </div>
   </div>
 
+
+
 {% if not parent %}
+
   <!-- Select by HALL -->
-  <table style="width:20%" align="center">
-    <tr>
-      <th><input type="checkbox" name="vehicle1" value="Bike"><br></th>
-      <th><input type="checkbox" name="vehicle1" value="Bike"><br></th>
-      <th><input type="checkbox" name="vehicle1" value="Bike"><br></th>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-    </tr>
-    <tr>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-    </tr>
-    <tr>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-      <td><input type="checkbox" name="vehicle1" value="Bike"><br></td>
-    </tr>
-  </table>
-  <a class="btn btn-outline-success float-right" href="#">Reserve</a>
+  <form method="POST" action="">
+    <table class="table table-borderless" >
+      <tr align="center">
+        <th></th>
+        {% for i in range(1, 7)%}
+          <th>Seat {{ i }}</th>
+        {% endfor %}
+      </tr>
+      {% for x in range(1, 4) %}
+        <tr align="center">
+          <th>Row {{ x }}</th>
+          {% for y in range(1, 7) %}
+              <th><input type="checkbox" name="seat" value="{{ x|string + '_' + y|string }}" {{ seats_status[x-1][y-1] }}><br></th>
+              <span class="checkmark"></span>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    
+      <div class="form-group col-md-12">
+        {{ form.csrf_token }}
+        {{ form.reserve(class="btn float-right btn-outline-success") }}
+      </div>
+  </form>
 
 {% endif %}
 

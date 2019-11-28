@@ -95,3 +95,4 @@ class CreateDate(FlaskForm):
 	hall = StringField('Hall')
 	seat = BooleanField()
 	create = SubmitField('Create')
+	reserve = SubmitField('Reserve')
