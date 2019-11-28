@@ -55,10 +55,11 @@ class Event(db.Model):
 	duration = db.Column(db.Integer, nullable=False)
 	language = db.Column(db.String(10), nullable=False)
 	age_restriction = db.Column(db.Integer(), nullable=False)
+	description = db.Column(db.String(300), nullable=False)
 
 
 	def __repr__(self):
-		return f"Event('{self.name}, {self.event_type}, {self.duration}, {self.language}, {self.age_restriction}', {self.picture})"
+		return f"Event('{self.name}, {self.event_type}, {self.duration}, {self.language}, {self.age_restriction}, {self.picture}, {self.description}')"
 
 
 

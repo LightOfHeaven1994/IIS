@@ -86,13 +86,15 @@ def logout():
 	return redirect(url_for('home'))
 
 
-def upload_picture(form_picture):  # generate random name for pic and save it
+def upload_picture(form_picture, is_event_pic):  # generate random name for pic and save it
 	random_hex = secrets.token_hex(8)
 	_, f_ext = os.path.splitext(form_picture.filename)
 	picture_name = random_hex + f_ext
 	picture_path = os.path.join(app.root_path, 'static/profile_picture', picture_name)
 
 	size = 255, 255
+	if is_event_pic:
+		size = 512, 512
 	im = Image.open(form_picture)
 	im.thumbnail(size)
 	im.save(picture_path)
@@ -111,7 +113,7 @@ def account():
 			hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')  # hash password for user
 			current_user.password = hashed_password
 		if form.picture.data:
-			picture_file = upload_picture(form.picture.data)
+			picture_file = upload_picture(form.picture.data, False)
 			current_user.profile_picture = picture_file
 		db.session.commit()
 		flash('Your accoun has been updated', 'success')
@@ -185,9 +187,9 @@ def create_event():
 	if form.validate_on_submit():
 		try:
 			if form.picture.data:	
-				picture_file = upload_picture(form.picture.data)
+				picture_file = upload_picture(form.picture.data, True)
 			event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
-				language=form.language.data, age_restriction=form.age_restriction.data, picture=picture_file)
+				language=form.language.data, age_restriction=form.age_restriction.data, description=form.description.data, picture=picture_file)
 			db.session.add(event)
 			db.session.commit()
 			flash('Created successfully', 'success')
@@ -318,9 +320,10 @@ def update_event(event_id):
 		event.duration = form.duration.data
 		event.language = form.language.data
 		event.age_restriction = form.age_restriction.data
+		event.description = form.description.data
 
 		if form.picture.data:
-			picture_file = upload_picture(form.picture.data)
+			picture_file = upload_picture(form.picture.data, True)
 			event.picture = picture_file
 		db.session.commit()
 		flash('Your event has been updated!', 'success')
@@ -331,6 +334,7 @@ def update_event(event_id):
 		form.duration.data = event.duration
 		form.language.data = event.language
 		form.age_restriction.data = event.age_restriction
+		form.description.data = event.description
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
 	return render_template('createevent.html', form=form, picture=event_picture, legend='Update event') #
 

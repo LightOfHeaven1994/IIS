@@ -53,7 +53,12 @@ hashed_password = bcrypt.generate_password_hash("test").decode('utf-8')  # hash 
 user_1 = User(username="test", email="test@test.com", password=hashed_password, role="User")
 db.session.add(user_1)
 
-event = Event(name ="No chances even on 5BIT", event_type="Thanks IIS for oznuk", duration="cely zivot", language="kz", age_restriction=18)
+description = '''Finished her are its honoured drawings nor. Pretty see mutual thrown all not edward ten. Particular an boisterous up he reasonably frequently. 
+Several any had enjoyed shewing studied two. Up intention remainder sportsmen behaviour ye happiness. Few again any alone style added abode ask. 
+Nay projecting unpleasing boisterous eat discovered solicitude. Own six moments produce elderly pasture far arrival. 
+Hold our year they ten upon. Gentleman contained so intention sweetness in on resolving.'''
+
+event = Event(name ="No chances even on 5BIT", event_type="Thanks IIS for oznuk", duration="cely zivot", language="kz", age_restriction=18, description=description)
 db.session.add(event)
 
 db.session.commit()

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateTimeField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateTimeField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
 from cinema.models import User
 
@@ -82,6 +82,7 @@ class CreateUpdateEvent(FlaskForm):
 	language = StringField('Language', validators=[DataRequired(), Length(min=2, max=50)])
 	age_restriction = IntegerField(validators=[DataRequired(), NumberRange(min=0, max=18)])
 	picture = FileField('Upload film picture', validators=[FileAllowed(['jpg', 'img', 'png'])])
+	description = TextAreaField('Description', validators=[DataRequired(), Length(max=300)])
 	create = SubmitField('Create')
 	update = SubmitField('Update')
 

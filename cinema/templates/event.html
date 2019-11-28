@@ -1,37 +1,42 @@
 {% extends "layout.html" %}
 {% block content %}
 
-
-<img class="rounded-circle account-img" src="{{ picture }}">
-    {% if not parent %}
-    <a href="{{ url_for('event_Parent',event_id=event.id) }}">Event Details</a>
-    {% endif %}
-
-  <div class="media-body">
-    <div class="article-metadata">
-      {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
-        <div class="text-right mb-3">
-        {% if parent %}
-          <a class="btn btn-outline-info" href="{{ url_for('update_event', event_id=event.id) }}">Update event</a>
-          <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Delete event</button>
-        {% endif %}
-        </div>
-      {% endif %}
-      <h2 class="article-title">{{ event.name }}</h2>
-      <p><b>Type:</b> {{ event.event_type }}</p>
-      <p><b>Duration:</b> {{ event.duration }}</p>
-      <p><b>Age Restriction:</b> {{ event.age_restriction }}+</p>
-      {% if current_user.role == "User" or current_user.role == "Cashier" %}
-        {% for date in dates %}
-          {% if date.alldates[0].id == event.id and hall_color == date.alldates_in_hall[0].hall_name and event_time == date.date %}
-            <p><b>Time:</b> {{ date.date }}</p>
-            <p><b>Hall:</b> {{ date.alldates_in_hall[0].hall_name }}</p>
-          {% endif %}
-        {% endfor %}
+  <div class="row">
+    <div class="col-md-3">
+    <img class="rounded account-img" src="{{ picture }}">
+      {% if not parent and (current_user.role == "Admin" or current_user.role == "Redactor") %}
+      <a href="{{ url_for('event_Parent',event_id=event.id) }}">Event Details</a>
       {% endif %}
     </div>
-  </div>
 
+    <div class="media-body">
+      <div class="article-metadata">
+        {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
+          <div class="text-right mb-3">
+          {% if parent %}
+            <a class="btn btn-outline-info" href="{{ url_for('update_event', event_id=event.id) }}">Update event</a>
+            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Delete event</button>
+          {% endif %}
+          </div>
+        {% endif %}
+        <h2 class="article-title">{{ event.name }}</h2>
+        <p><b>Type:</b> {{ event.event_type }}</p>
+        <p><b>Duration:</b> {{ event.duration }}</p>
+        <p><b>Age Restriction:</b> {{ event.age_restriction }}+</p>
+        {% if current_user.role == "User" or current_user.role == "Cashier" %}
+          {% for date in dates %}
+            {% if date.alldates[0].id == event.id and hall_color == date.alldates_in_hall[0].hall_name and event_time == date.date %}
+              <p><b>Time:</b> {{ date.date }}</p>
+              <p><b>Hall:</b> {{ date.alldates_in_hall[0].hall_name }}</p>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="article-metadata">
+    <p><b>Description:</b> {{ event.description }}</p>
+  </div>
 
 <style>
 .checkbox {
@@ -136,7 +141,7 @@ position: relative;
             <input class="btn btn-danger" type="submit" value="Delete">
           </form>
         </div>
-      </div>
+      </div>  
     </div>
   </div>
 
