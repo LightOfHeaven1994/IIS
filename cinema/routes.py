@@ -235,12 +235,24 @@ def event_Parent(event_id):
 
 
 @app.route('/program/<int:event_id>/<string:route>',methods=['GET','POST'])
-def child_delete(event_id,route):
-	route=route.split("&")
-	print(route[0]+route[1]+"WTF?")
-	sql='DELETE FROM Hall JOIN "Date" AS dat WHERE dat.date=%s AND Hall.hall_name=%s'
-	db.engine.execute(sql,route[1],route[0],())
-	return render_template('layout.html')
+def child_delete(event_id, route):
+	route=route.split("&")	# route[0] is deleted hall,  route[1] is deleted time
+
+	all_halls = Hall.query.all()
+
+	for hall in all_halls:
+		struct_date = hall.dates_for_hall.all()	# take date binded to this hall
+		try:
+			if hall.hall_name == route[0] and struct_date[0].date == route[1]:
+				db.session.delete(hall)
+				db.session.delete(struct_date[0])
+				db.session.commit()
+				break
+		except IndexError:
+			pass
+
+	return redirect(url_for('event_Parent', event_id=event_id))
+
 
 @app.route('/program/<int:event_id>/<string:hall_color>/<string:event_time>',methods=['GET','POST'])
 def event(event_id, hall_color, event_time):
