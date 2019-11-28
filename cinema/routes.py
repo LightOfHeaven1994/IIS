@@ -7,6 +7,7 @@ from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate
 from cinema.models import User, Event, Date, event_hall, Hall, Seat, Ticket
 from flask_login import login_user, current_user, logout_user, login_required
+from sqlalchemy import desc, asc
 
 
 @app.route('/')
@@ -23,17 +24,7 @@ def about():
 @app.route('/program')
 def program():
 	form = ShowEvents()
-	if form.validate_on_submit():
-		print("CLICK KURVA")
-		print("KURVA\nKURVA\n")
-
-	dates = Date.query.all()
-
-	# if dates:
-	# 	for date in dates:
-	# 		print("\n\nBLADSKY KONTROL:")
-	# 		print(date.alldates[0])
-	# 		print(date.alldates_in_hall[0])
+	dates = Date.query.order_by(asc(Date.date))
 
 	events = Event.query.all()
 	halls = Hall.query.all()
@@ -327,7 +318,7 @@ def update_event(event_id):
 			event.picture = picture_file
 		db.session.commit()
 		flash('Your event has been updated!', 'success')
-		return redirect(url_for('event', event_id=event.id, hall_color='Default', event_time='0000-00-00 00:00'))
+		return redirect(url_for('event_Parent', event_id=event.id, hall_color='Default', event_time='0000-00-00 00:00'))
 	elif request.method == 'GET':
 		form.eventname.data = event.name
 		form.event_type.data = event.event_type
