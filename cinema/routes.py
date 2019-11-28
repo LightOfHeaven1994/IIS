@@ -176,7 +176,7 @@ def create_event():
 	form = CreateUpdateEvent()
 	if current_user.role != "Admin" and current_user.role != "Redactor":
 		abort(403)
-	picture_file = url_for('static', filename='profile_picture/default_event.jpg')	# default picture for first time
+	picture_file = url_for('static', filename='profile_picture/default/default_event.jpg')	# default picture for first time
 	if form.validate_on_submit():
 		try:
 			if form.picture.data:	
