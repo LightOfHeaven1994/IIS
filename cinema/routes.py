@@ -6,6 +6,8 @@ from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate
 from cinema.models import User, Event, Date, event_hall, Hall, Seat, Ticket
+from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate, DeleteChild
+from cinema.models import User, Event, Date, event_hall, Hall
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy import desc, asc
 
@@ -195,10 +197,13 @@ def create_event():
 @app.route('/program/<int:event_id>',methods=['GET','POST'])
 def event_Parent(event_id):
 	form=CreateDate()
+	delform=DeleteChild()
 	parent=True
 	event = Event.query.get_or_404(event_id)
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
-	if form.validate_on_submit():
+	if delform.validate_on_submit() and delform.delete.data:
+		pass
+	if form.validate_on_submit() and form.create.data:
 		hall_name = Hall(hall_name=form.hall.data)
 		date= Date(date=form.date.data)
 		db.session.add(date)
@@ -213,22 +218,29 @@ def event_Parent(event_id):
 			halls = event.halls_of_event.all()
 			occasions=[]
 			for hall,date in zip(halls,dates):
-				occasions.append(hall.hall_name+" at "+date.date)
+				occasions.append(hall.hall_name+"/"+date.date)
 			event_picture = url_for('static', filename='profile_picture/' + event.picture)
-			return render_template('event.html', form=form, event=event, occasions=occasions, picture=event_picture, parent=parent )
+			return render_template('event.html', form=form, event=event, occasions=occasions, picture=event_picture, parent=parent,delform=delform )
 	else:
 		halls = event.halls_of_event.all()
 		dates = event.dates_of_event.all()
 		occasions = []
 		for hall, date in zip(halls, dates):
-			occasions.append(hall.hall_name + " at " + date.date)
+			occasions.append(hall.hall_name + "/" + date.date)
 		event_picture = url_for('static', filename='profile_picture/' + event.picture)
 		if dates and halls:
-			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, picture=event_picture, parent=parent)
+			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, picture=event_picture, parent=parent, delform=delform)
 		else:
-			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, picture=event_picture, parent=parent)
+			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, picture=event_picture, parent=parent, delform=delform)
 
 
+@app.route('/program/<int:event_id>/<string:route>',methods=['GET','POST'])
+def child_delete(event_id,route):
+	route=route.split("/")
+	print(route[0]+route[1]+"WTF?")
+	sql='DELETE FROM Hall NATURAL JOIN "Date" WHERE "Date".date=%s AND Hall.name=%s'
+	db.engine.execute(sql,route[1],route[0],())
+	return render_template('layout.html')
 
 @app.route('/program/<int:event_id>/<string:hall_color>/<string:event_time>',methods=['GET','POST'])
 def event(event_id, hall_color, event_time):
@@ -269,19 +281,19 @@ def event(event_id, hall_color, event_time):
 						db.session.add(seat)
 						break;
 			db.session.commit()
-			
+
 
 		flash('Reserved successfully', 'success')
 		return redirect(url_for('program'))
 
 	print("HOW MANY TICKETS DO I HAVE")
-	print(current_user.tickets)
+	#print(current_user.tickets)
 
-	if(current_user.tickets):
-		print("TICKET PRICE")
-		print(current_user.tickets[0].price)
-		print("HOW MANY SEATS HAVE TICKET")
-		print(current_user.tickets[0].seats)
+	# if(current_user.tickets):
+	# 	print("TICKET PRICE")
+	# 	print(current_user.tickets[0].price)
+	# 	print("HOW MANY SEATS HAVE TICKET")
+	# 	print(current_user.tickets[0].seats)
 
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
 
@@ -292,9 +304,9 @@ def event(event_id, hall_color, event_time):
 	seats_status.append(row_1)
 	seats_status.append(row_2)
 	seats_status.append(row_3)
-		
 
-	return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color, 
+
+	return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color,
 		picture=event_picture, event_time=event_time, seats_status=seats_status)
 
 

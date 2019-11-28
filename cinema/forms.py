@@ -99,3 +99,7 @@ class CreateDate(FlaskForm):
 	seat = BooleanField()
 	create = SubmitField('Create')
 	reserve = SubmitField('Reserve')
+
+class DeleteChild(FlaskForm):
+	delete = SubmitField('X')
+	record= StringField()
