@@ -22,6 +22,9 @@
 
   <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item waves-effect waves-light">
+        <a class="nav-link active" id="hall_all-tab" data-toggle="tab" href="#hall_all" role="tab" aria-controls="hall_all" aria-selected="false"> All </a>
+      </li>
+      <li class="nav-item waves-effect waves-light">
         <a class="nav-link" id="hall_1-tab" data-toggle="tab" href="#hall_1" role="tab" aria-controls="hall_1" aria-selected="false"> {{ halls[0] }}</a>
       </li>
       <li class="nav-item waves-effect waves-light">
@@ -38,6 +41,24 @@
   </ul>
 
     <div class="tab-content" id="UserContent">
+      <div class="tab-pane in active" id="hall_all" role="tabpanel" aria-labelledby="hall_all-tab">
+        {% for date in dates %}
+            <div class="row">
+              <img class="rounded account-img" src="{{ url_for('static', filename='profile_picture/' + date.alldates[0].picture) }}">
+              <div class="media-body">
+                <div class="article-metadata">
+                  <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id, hall_color='Green Hall', event_time=date.date) }}">
+                    <h4>{{ date.alldates[0].name }}</h4>
+                  </a>
+                  <p><b>Type:</b> {{ date.alldates[0].event_type }}</p>
+                  <p><b>Duration:</b> {{ date.alldates[0].duration }}</p>
+                  <p><b>Language:</b> {{ date.alldates[0].language }}</p>
+                  <p><b>Time:</b> {{ date.date }}</p>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+      </div>
       <div class="tab-pane fade" id="hall_1" role="tabpanel" aria-labelledby="hall_1-tab">
         {% for date in dates %}
           {% if date.alldates_in_hall[0].hall_name == "Green Hall" %}
