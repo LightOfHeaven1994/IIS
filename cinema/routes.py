@@ -218,7 +218,7 @@ def event_Parent(event_id):
 			halls = event.halls_of_event.all()
 			occasions=[]
 			for hall,date in zip(halls,dates):
-				occasions.append(hall.hall_name+"/"+date.date)
+				occasions.append(hall.hall_name+"&"+date.date)
 			event_picture = url_for('static', filename='profile_picture/' + event.picture)
 			return render_template('event.html', form=form, event=event, occasions=occasions, picture=event_picture, parent=parent,delform=delform )
 	else:
@@ -226,7 +226,7 @@ def event_Parent(event_id):
 		dates = event.dates_of_event.all()
 		occasions = []
 		for hall, date in zip(halls, dates):
-			occasions.append(hall.hall_name + "/" + date.date)
+			occasions.append(hall.hall_name + "&" + date.date)
 		event_picture = url_for('static', filename='profile_picture/' + event.picture)
 		if dates and halls:
 			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, picture=event_picture, parent=parent, delform=delform)
@@ -236,9 +236,9 @@ def event_Parent(event_id):
 
 @app.route('/program/<int:event_id>/<string:route>',methods=['GET','POST'])
 def child_delete(event_id,route):
-	route=route.split("/")
+	route=route.split("&")
 	print(route[0]+route[1]+"WTF?")
-	sql='DELETE FROM Hall NATURAL JOIN "Date" WHERE "Date".date=%s AND Hall.name=%s'
+	sql='DELETE FROM Hall JOIN "Date" AS dat WHERE dat.date=%s AND Hall.hall_name=%s'
 	db.engine.execute(sql,route[1],route[0],())
 	return render_template('layout.html')
 
