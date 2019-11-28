@@ -107,6 +107,9 @@ def account():
 	if form.validate_on_submit():
 		current_user.username = form.username.data
 		current_user.email = form.email.data
+		if form.password.data:
+			hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')  # hash password for user
+			current_user.password = hashed_password
 		if form.picture.data:
 			picture_file = upload_picture(form.picture.data)
 			current_user.profile_picture = picture_file
