@@ -15,25 +15,31 @@ class User(db.Model, UserMixin):
 	password = db.Column(db.String(60), nullable=False)
 	profile_picture = db.Column(db.String(20), nullable=False, default='default.jpg')
 	role = db.Column(db.String(20), nullable=False, default='User')
-	reservations = db.relationship('Reservation')
+	tickets = db.relationship('Ticket')
 
 	def __repr__(self):
 		return f"User('{self.username}', '{self.email}', '{self.role}', '{self.profile_picture}')"
-
-
-class Reservation(db.Model):
-
-	id = db.Column(db.Integer, primary_key=True)
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-	tickets = db.relationship('Ticket')
 
 
 class Ticket(db.Model):
 
 	id = db.Column(db.Integer, primary_key=True)
 	price = db.Column(db.Integer, nullable=False)
-	reservation_id = db.Column(db.Integer, db.ForeignKey('reservation.id'), nullable=False)
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	seats = db.relationship('Seat')
+
+
+class Seat(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	row = db.Column(db.Integer, nullable=False)
+	number = db.Column(db.Integer, nullable=False)
+	is_busy = db.Column(db.String, default="")
+	hall_id = db.Column(db.Integer, db.ForeignKey('hall.id'), nullable=False)
+	ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.id'))
+
+	def __repr__(self):
+		return f"Seat('{self.row}', '{self.number}', '{self.is_busy}')"
+
 
 
 event_hall = db.Table('event_hall', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
@@ -54,9 +60,6 @@ class Event(db.Model):
 	def __repr__(self):
 		return f"Event('{self.name}, {self.event_type}, {self.duration}, {self.language}, {self.age_restriction}', {self.picture})"
 
-
-# hall_date = db.Table('hall_date', db.Column('hall_id', db.Integer, db.ForeignKey('hall.id')),
-# 	db.Column('date_id', db.Integer, db.ForeignKey('date.id')))
 
 
 class Date(db.Model):
@@ -79,14 +82,3 @@ class Hall(db.Model):
 	def __repr__(self):
 		return f"Hall('{self.hall_name}')"
 
-
-class Seat(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	row = db.Column(db.Integer, nullable=False)
-	number = db.Column(db.Integer, nullable=False)
-	is_busy = db.Column(db.Boolean, default=False)
-	hall_id = db.Column(db.Integer, db.ForeignKey('hall.id'), nullable=False)
-	ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.id'))
-
-	def __repr__(self):
-		return f"Seat('{self.row}', '{self.number}')"
