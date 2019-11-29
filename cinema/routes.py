@@ -308,6 +308,7 @@ def event(event_id, hall_color, event_time):
 	hall = Hall.query.filter(Hall.hall_name == hall_color).first()
 	date = Date.query.filter(Date.date == event_time).first()
 	tickets = Ticket.query.filter(Ticket.date_id == date.id).filter(Ticket.hall_id == hall.id).all()
+	#Todo very slow implementation. We lose like a second or two to the cycles here.
 	for seat in Seat.query.all():
 		found=False
 		print(tickets)
