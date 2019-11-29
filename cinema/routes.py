@@ -279,6 +279,7 @@ def event(event_id, hall_color, event_time):
 
 			all_seats = Seat.query.all()
 			ticket = Ticket(price=len(seats)*120, user_id=current_user.id )	# let's define prices for halls?
+			#TODO add all seats of a ticket here later
 			db.session.add(ticket)
 			db.session.commit()
 
@@ -289,7 +290,7 @@ def event(event_id, hall_color, event_time):
 				for seat in all_seats:
 					if int(index[0]) == seat.row and int(index[1]) == seat.number:
 						seat.is_busy = "disabled"
-						seat.ticket_id = ticket.id
+						seat.tickets_on_seat.append(ticket)
 						ticket.date_id = date.id
 						ticket.hall_id=hall.id
 						print("TRY ADD TICKET")
@@ -306,20 +307,30 @@ def event(event_id, hall_color, event_time):
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
 	hall = Hall.query.filter(Hall.hall_name == hall_color).first()
 	date = Date.query.filter(Date.date == event_time).first()
+	tickets = Ticket.query.filter(Ticket.date_id == date.id).filter(Ticket.hall_id == hall.id).all()
 	for seat in Seat.query.all():
-		tickets=Ticket.query.filter(Ticket.date_id==date.id).filter(Ticket.hall_id==hall.id).all()
+		found=False
 		print(tickets)
 		if not tickets:
-			seat.is_busy=""
+			seat.is_busy = ""
+			db.session.commit()
+		elif not seat.tickets_on_seat:
+			seat.is_busy = ""
 			db.session.commit()
 		else:
 			for ticket in tickets:
-				if seat.ticket_id==ticket.id:
-					seat.is_busy="disabled"
-					db.session.commit()
+				if found:
+					break
 				else:
-					seat.is_busy=""
-					db.session.commit()
+					for ticket_id in seat.tickets_on_seat:
+						if ticket_id.id==ticket.id:
+							seat.is_busy="disabled"
+							db.session.commit()
+							found=True
+							break
+						else:
+							seat.is_busy=""
+							db.session.commit()
 
 	all_seats = [seat.is_busy for seat in Seat.query.all()]
 	row_1 = all_seats[0:6]

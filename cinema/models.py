@@ -21,6 +21,10 @@ class User(db.Model, UserMixin):
 		return f"User('{self.username}', '{self.email}', '{self.role}', '{self.profile_picture}')"
 
 
+ticket_seat = db.Table('ticket_seat', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
+	db.Column('date_id', db.Integer, db.ForeignKey('ticket.id')),
+	db.Column('hall_id', db.Integer, db.ForeignKey('seat.id')))
+
 class Ticket(db.Model):
 
 	id = db.Column(db.Integer, primary_key=True)
@@ -28,7 +32,8 @@ class Ticket(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	hall_id = db.Column(db.Integer, db.ForeignKey('hall.id'))
 	date_id = db.Column(db.Integer, db.ForeignKey('date.id'))
-	seats = db.relationship('Seat')
+	tickets_on_seat = db.relationship('Seat', secondary=ticket_seat,
+							backref=db.backref('tickets_on_seat', lazy='dynamic'))
 
 class Seat(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -37,6 +42,8 @@ class Seat(db.Model):
 	is_busy = db.Column(db.String, default="")
 	hall_id=db.Column(db.Integer,db.ForeignKey('hall.id'))
 	ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.id'))
+	seats_in_ticket = db.relationship('Ticket', secondary=ticket_seat,
+							backref=db.backref('seats_in_ticket', lazy='dynamic'))
 
 	def __repr__(self):
 		return f"Seat('{self.row}', '{self.number}', '{self.is_busy}')"
