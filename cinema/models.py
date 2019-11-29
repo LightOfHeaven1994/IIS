@@ -26,15 +26,16 @@ class Ticket(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	price = db.Column(db.Integer, nullable=False)
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	hall_id = db.Column(db.Integer, db.ForeignKey('hall.id'))
+	date_id = db.Column(db.Integer, db.ForeignKey('date.id'))
 	seats = db.relationship('Seat')
-
 
 class Seat(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	row = db.Column(db.Integer, nullable=False)
 	number = db.Column(db.Integer, nullable=False)
 	is_busy = db.Column(db.String, default="")
-	hall_id = db.Column(db.Integer, db.ForeignKey('hall.id'), nullable=False)
+	hall_id=db.Column(db.Integer,db.ForeignKey('hall.id'))
 	ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.id'))
 
 	def __repr__(self):
@@ -66,16 +67,19 @@ class Event(db.Model):
 class Date(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.String(13), nullable=False)
+	seats = db.relationship('Ticket')
 	alldates = db.relationship('Event', secondary=event_hall,
 							backref=db.backref('dates_of_event',lazy='dynamic'))
 	alldates_in_hall = db.relationship('Hall', secondary=event_hall,
 							backref=db.backref('dates_for_hall', lazy='dynamic'))
+
 
   
 class Hall(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	hall_name = db.Column(db.String(30), nullable=False)
 	seats = db.relationship('Seat')
+	tickets=db.relationship('Ticket')
 	events_in_hall = db.relationship('Event', secondary=event_hall,
 							backref=db.backref('halls_of_event', lazy='dynamic'))
 

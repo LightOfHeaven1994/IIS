@@ -238,8 +238,10 @@ def event_Parent(event_id):
 def child_delete(event_id,route):
 	route=route.split("&")
 	print(route[0]+route[1]+"WTF?")
-	sql='DELETE FROM Hall JOIN "Date" AS dat WHERE dat.date=%s AND Hall.hall_name=%s'
-	db.engine.execute(sql,route[1],route[0],())
+	del_date=Date.query.filter(Hall.hall_name==route[0]).filter(Date.date==route[1])
+	print(del_date)
+	db.session.delete(del_date.first)
+	db.session.commit()
 	return render_template('layout.html')
 
 @app.route('/program/<int:event_id>/<string:hall_color>/<string:event_time>',methods=['GET','POST'])
@@ -266,16 +268,20 @@ def event(event_id, hall_color, event_time):
 				row_number.append(re.split(r'_', seat))
 
 			all_seats = Seat.query.all()
-			ticket = Ticket(price=len(seats)*120, user_id=current_user.id)	# let's define prices for halls?
+			ticket = Ticket(price=len(seats)*120, user_id=current_user.id )	# let's define prices for halls?
 			db.session.add(ticket)
 			db.session.commit()
 
 			db.session.add(current_user)
+			hall=Hall.query.filter(Hall.hall_name==hall_color).first()
+			date=Date.query.filter(Date.date==event_time).first()
 			for index in row_number:
 				for seat in all_seats:
 					if int(index[0]) == seat.row and int(index[1]) == seat.number:
 						seat.is_busy = "disabled"
 						seat.ticket_id = ticket.id
+						ticket.date_id = date.id
+						ticket.hall_id=hall.id
 						print("TRY ADD TICKET")
 						print(ticket.id)
 						db.session.add(seat)
@@ -286,16 +292,21 @@ def event(event_id, hall_color, event_time):
 		flash('Reserved successfully', 'success')
 		return redirect(url_for('program'))
 
-	print("HOW MANY TICKETS DO I HAVE")
-	#print(current_user.tickets)
-
-	# if(current_user.tickets):
-	# 	print("TICKET PRICE")
-	# 	print(current_user.tickets[0].price)
-	# 	print("HOW MANY SEATS HAVE TICKET")
-	# 	print(current_user.tickets[0].seats)
 
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
+	hall = Hall.query.filter(Hall.hall_name == hall_color).first()
+	date = Date.query.filter(Date.date == event_time).first()
+	for seat in Seat.query.all():
+		tickets=Ticket.query.filter(Ticket.date_id==date.id).filter(Ticket.hall_id==hall.id).all()
+		print(tickets)
+		if not tickets:
+			seat.is_busy=""
+			db.session.commit()
+		else:
+			for ticket in tickets:
+				if seat.ticket_id==ticket.id:
+					seat.is_busy="disabled"
+					db.session.commit()
 
 	all_seats = [seat.is_busy for seat in Seat.query.all()]
 	row_1 = all_seats[0:6]
@@ -304,7 +315,6 @@ def event(event_id, hall_color, event_time):
 	seats_status.append(row_1)
 	seats_status.append(row_2)
 	seats_status.append(row_3)
-
 
 	return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color,
 		picture=event_picture, event_time=event_time, seats_status=seats_status)
