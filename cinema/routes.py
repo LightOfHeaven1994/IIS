@@ -176,7 +176,7 @@ def create_event():
 	form = CreateUpdateEvent()
 	if current_user.role != "Admin" and current_user.role != "Redactor":
 		abort(403)
-	picture_file = url_for('static', filename='profile_picture/default_event.jpg')	# default picture for first time
+	picture_file = url_for('static', filename='profile_picture/default/default_event.jpg')	# default picture for first time
 	if form.validate_on_submit():
 		try:
 			if form.picture.data:	
@@ -235,14 +235,24 @@ def event_Parent(event_id):
 
 
 @app.route('/program/<int:event_id>/<string:route>',methods=['GET','POST'])
-def child_delete(event_id,route):
-	route=route.split("&")
-	print(route[0]+route[1]+"WTF?")
-	del_date=Date.query.filter(Hall.hall_name==route[0]).filter(Date.date==route[1])
-	print(del_date)
-	db.session.delete(del_date.first)
-	db.session.commit()
-	return render_template('layout.html')
+def child_delete(event_id, route):
+	route=route.split("&")	# route[0] is deleted hall,  route[1] is deleted time
+
+	all_halls = Hall.query.all()
+
+	for hall in all_halls:
+		struct_date = hall.dates_for_hall.all()	# take date binded to this hall
+		try:
+			if hall.hall_name == route[0] and struct_date[0].date == route[1]:
+				db.session.delete(hall)
+				db.session.delete(struct_date[0])
+				db.session.commit()
+				break
+		except IndexError:
+			pass
+
+	return redirect(url_for('event_Parent', event_id=event_id))
+
 
 @app.route('/program/<int:event_id>/<string:hall_color>/<string:event_time>',methods=['GET','POST'])
 def event(event_id, hall_color, event_time):
@@ -306,6 +316,9 @@ def event(event_id, hall_color, event_time):
 			for ticket in tickets:
 				if seat.ticket_id==ticket.id:
 					seat.is_busy="disabled"
+					db.session.commit()
+				else:
+					seat.is_busy=""
 					db.session.commit()
 
 	all_seats = [seat.is_busy for seat in Seat.query.all()]

@@ -51,7 +51,7 @@ event_hall = db.Table('event_hall', db.Column('event_id', db.Integer, db.Foreign
 class Event(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(60), unique=True, nullable=False)
-	picture = db.Column(db.String(20), nullable=False, default='default_event.jpg')
+	picture = db.Column(db.String(20), nullable=False, default='default/default_event.jpg')
 	event_type = db.Column(db.String(60), nullable=False)
 	duration = db.Column(db.Integer, nullable=False)
 	language = db.Column(db.String(10), nullable=False)
