@@ -7,7 +7,7 @@ from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
 from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate
 from cinema.models import User, Event, Date, event_hall, Hall, Seat, Ticket
-from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate, DeleteChild
+from cinema.forms import RegistrationForm, LoginForm, UpdateAccountForm, EditUser, DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate, DeleteChild, ReserveForUser
 from cinema.models import User, Event, Date, event_hall, Hall
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy import desc, asc
@@ -302,13 +302,15 @@ def child_delete(event_id, route):
 @app.route('/program/<int:event_id>/<string:hall_color>/<string:event_time>',methods=['GET','POST'])
 def event(event_id, hall_color, event_time):
 	form=CreateDate()
+	form_ReserveForUser = ReserveForUser()
 	event = Event.query.get_or_404(event_id)
 	hall_name = Hall(hall_name=form.hall.data)
 	halls = hall_name.dates_for_hall
 	dates = event.dates_of_event
 	seats_status = []
 
-	if form.validate_on_submit():
+	if form.validate_on_submit() or (form_ReserveForUser.validate_on_submit() and request.form_ReserveForUser['inputEmail']):
+		print(form.validate_on_submit())
 		if not current_user.is_authenticated:
 			flash('Before reservation you need to create account', 'warning')
 			return redirect(url_for('register'))
@@ -386,7 +388,7 @@ def event(event_id, hall_color, event_time):
 	seats_status.append(row_3)
 
 	return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color,
-		picture=event_picture, event_time=event_time, seats_status=seats_status)
+		picture=event_picture, event_time=event_time, seats_status=seats_status, form_ReserveForUser=form_ReserveForUser)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])
