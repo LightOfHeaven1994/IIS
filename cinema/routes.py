@@ -223,7 +223,6 @@ def event_Parent(event_id):
 		end_dates=[datetime.strptime(existing_date.end_date,'%Y-%m-%d %H:%M:%S') for existing_date in HallParent.dates_for_hall]
 		start_dates.sort()
 		end_dates.sort()
-		print(start_dates)
 		conflict=True
 		if not start_dates:
 			conflict=False
@@ -233,15 +232,9 @@ def event_Parent(event_id):
 		else:
 			for i in range(1,len(start_dates)):
 				if end_dates[i-1]<=date.date and date.date+timedelta(seconds=time)<=start_dates[i]:
-					print('middle case')
-					print(end_dates[i-1])
-					print(start_dates[i])
 					conflict=False
 					break
 				elif start_dates[0]>=date.date+timedelta(seconds=time) or date.date>=end_dates[len(end_dates)-1]:
-					print('edge case')
-					print(start_dates[0])
-					print(end_dates[len(end_dates)-1])
 					conflict=False
 					break
 
@@ -286,12 +279,8 @@ def child_delete(event_id, route):
 	event=Event.query.filter(Event.id==event_id).first()
 	all_halls = event.halls_of_event.all()
 	struct_date = event.dates_of_event.all()  # take dates binded to this hall
-	print(struct_date)
-	print('megabruh')
-	print(all_halls)
 	for i in range(0, len(struct_date)):
 		try:
-			print(all_halls[i].hall_name+"JE V CASE"+struct_date[i].date)
 			if all_halls[i].hall_name == route[0] and struct_date[i].date == route[1]:
 				db.session.delete(all_halls[i])
 				db.session.delete(struct_date[i])
