@@ -64,7 +64,7 @@ class Event(db.Model):
 	name = db.Column(db.String(60), unique=True, nullable=False)
 	picture = db.Column(db.String(20), nullable=False, default='default/default_event.jpg')
 	event_type = db.Column(db.String(60), nullable=False)
-	duration = db.Column(db.Integer, nullable=False)
+	duration = db.Column(db.String(20), nullable=False)
 	language = db.Column(db.String(10), nullable=False)
 	age_restriction = db.Column(db.Integer(), nullable=False)
 	description = db.Column(db.String(300), nullable=False)
@@ -78,6 +78,7 @@ class Event(db.Model):
 class Date(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.String(13), nullable=False)
+	end_date=db.Column(db.String(13),nullable=False)
 	seats = db.relationship('Ticket')
 	alldates = db.relationship('Event', secondary=event_hall,
 							backref=db.backref('dates_of_event',lazy='dynamic'))

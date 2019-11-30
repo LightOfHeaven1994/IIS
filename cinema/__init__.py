@@ -20,6 +20,7 @@ from cinema import routes
 
 # CREATE EVERYTHING FOR US.@@@@@@@@@@@@@@@@@@@@@@@@@@@
 from cinema.models import User, Event, Hall, Seat
+
 db.drop_all()
 db.create_all()
 
@@ -58,7 +59,7 @@ Several any had enjoyed shewing studied two. Up intention remainder sportsmen be
 Nay projecting unpleasing boisterous eat discovered solicitude. Own six moments produce elderly pasture far arrival. 
 Hold our year they ten upon. Gentleman contained so intention sweetness in on resolving.'''
 
-event = Event(name ="No chances even on 5BIT", event_type="Thanks IIS for oznuk", duration="cely zivot", language="kz", age_restriction=18, description=description)
+event = Event(name ="No chances even on 5BIT", event_type="Thanks IIS for oznuk", duration="30 minutes", language="kz", age_restriction=18, description=description)
 db.session.add(event)
 
 db.session.commit()

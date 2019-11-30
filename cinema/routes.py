@@ -1,6 +1,7 @@
 import re
 import os
 import secrets
+from datetime import datetime,timedelta
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt
@@ -206,13 +207,57 @@ def event_Parent(event_id):
 	if form.validate_on_submit() and form.create.data:
 		hall_name = Hall(hall_name=form.hall.data)
 		date= Date(date=form.date.data)
-		db.session.add(date)
-		db.session.add(hall_name)
-		hall_name.dates_for_hall.append(date)
-		event.dates_of_event.append(date)
-		event.halls_of_event.append(hall_name)
-		db.session.commit()
-		flash('Added successfully', 'success')
+
+
+		time=re.search("^\d+(?=\s(minutes|hours|days))",event.duration).group(0)
+		value=re.search("(minutes|hours|days)$",event.duration).group(0)
+		if value=="minutes":
+			time=int(time)*60
+		elif value=="hours":
+			time=int(time)*3600
+		elif value=="days":
+			time=int(time)*86400
+
+		HallParent = Hall.query.filter(Hall.hall_name == hall_name.hall_name).first()
+		start_dates=[datetime.strptime(existing_date.date, '%Y-%m-%d %H:%M:%S') for existing_date in HallParent.dates_for_hall]
+		end_dates=[datetime.strptime(existing_date.end_date,'%Y-%m-%d %H:%M:%S') for existing_date in HallParent.dates_for_hall]
+		start_dates.sort()
+		end_dates.sort()
+		print(start_dates)
+		conflict=True
+		if not start_dates:
+			conflict=False
+		elif len(start_dates)==1:
+			if end_dates[0]<=date.date or date.date+timedelta(seconds=time)<=start_dates[0]:
+				conflict=False
+		else:
+			for i in range(1,len(start_dates)):
+				if end_dates[i-1]<=date.date and date.date+timedelta(seconds=time)<=start_dates[i]:
+					print('middle case')
+					print(end_dates[i-1])
+					print(start_dates[i])
+					conflict=False
+					break
+				elif start_dates[0]>=date.date+timedelta(seconds=time) or date.date>=end_dates[len(end_dates)-1]:
+					print('edge case')
+					print(start_dates[0])
+					print(end_dates[len(end_dates)-1])
+					conflict=False
+					break
+
+		if not conflict:
+			date.end_date=date.date+timedelta(seconds=time)
+			db.session.add(date)
+			db.session.add(hall_name)
+			HallParent=Hall.query.filter(Hall.hall_name==hall_name.hall_name).first()
+			HallParent.dates_for_hall.append(date)
+			event.dates_of_event.append(date)
+			event.halls_of_event.append(hall_name)
+			db.session.commit()
+			flash('Added successfully', 'success')
+		else:
+			flash("There isn't an available timeslot for the event.",'danger')
+
 		if current_user.role == "Admin" or current_user.role == "Redactor":
 			dates=event.dates_of_event.all()
 			halls = event.halls_of_event.all()
@@ -355,9 +400,13 @@ def update_event(event_id):
 		event.name = form.eventname.data
 		event.event_type = form.event_type.data
 		event.duration = form.duration.data
-		event.language = form.language.data
-		event.age_restriction = form.age_restriction.data
-		event.description = form.description.data
+		time=re.search("^\d+(?=\s(minutes|hours|days))",event.duration)
+		if not time:
+			flash('Wrong duration format, please use: <time> minutes|hours|days','danger')
+		else:
+			event.language = form.language.data
+			event.age_restriction = form.age_restriction.data
+			event.description = form.description.data
 
 		if form.picture.data:
 			picture_file = upload_picture(form.picture.data, True)
