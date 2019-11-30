@@ -126,12 +126,22 @@
     </table>
     
         {{ form.csrf_token }}
-        <div class="text-right mb-3">
+        {{ form_ReserveForUser.csrf_token }}
           {% if current_user.role in ["Admin", "Redactor", "Cashier"] %}
-            {{ form.reserve_for_user(class="btn btn-outline-primary") }}
+            <div class="form-group row">
+              <!-- <label for="inputEmail" class="col-sm-0 col-form-label"></label> -->
+              <div class="col-sm-5">
+                <input type="email" class="form-control" name="inputEmail" id="inputEmail" placeholder="User email">
+              </div>
+              <div class="col-sm-5">
+                {{ form_ReserveForUser.reserve_for_user(class="btn btn-outline-primary") }}  
+              </div>
+            {{ form.reserve(class="btn float-right btn-outline-success") }}
+            </div>
+          {% else %}
+            {{ form.reserve(class="btn float-right btn-outline-success") }}
           {% endif %}
-          {{ form.reserve(class="btn btn-outline-success") }}
-      </div>
+
   </form>
 
 {% endif %}
@@ -161,8 +171,8 @@
     {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
       <form method="POST" action="">
         <div class="form-row">
+          {{ form.csrf_token }}
           <div class="form-group col-md-6">
-            {{ form.csrf_token }}
             <h6>Date</h6>
               {% if form.date.errors %}
                 {{ form.date(class="form-control is-invalid") }}

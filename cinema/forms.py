@@ -99,8 +99,12 @@ class CreateDate(FlaskForm):
 	seat = BooleanField()
 	create = SubmitField('Create')
 	reserve = SubmitField('Reserve')
-	reserve_for_user = SubmitField('Reserve for user')
+
 
 class DeleteChild(FlaskForm):
 	delete = SubmitField('X')
 	record= StringField()
+
+class ReserveForUser(FlaskForm):
+	reserve_for_user = SubmitField('Reserve for user')
+	search_user = StringField('Search user', validators=[Email()])
