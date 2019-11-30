@@ -283,14 +283,18 @@ def event_Parent(event_id):
 def child_delete(event_id, route):
 	route=route.split("&")	# route[0] is deleted hall,  route[1] is deleted time
 
-	all_halls = Hall.query.all()
-
-	for hall in all_halls:
-		struct_date = hall.dates_for_hall.all()	# take date binded to this hall
+	event=Event.query.filter(Event.id==event_id).first()
+	all_halls = event.halls_of_event.all()
+	struct_date = event.dates_of_event.all()  # take dates binded to this hall
+	print(struct_date)
+	print('megabruh')
+	print(all_halls)
+	for i in range(0, len(struct_date)):
 		try:
-			if hall.hall_name == route[0] and struct_date[0].date == route[1]:
-				db.session.delete(hall)
-				db.session.delete(struct_date[0])
+			print(all_halls[i].hall_name+"JE V CASE"+struct_date[i].date)
+			if all_halls[i].hall_name == route[0] and struct_date[i].date == route[1]:
+				db.session.delete(all_halls[i])
+				db.session.delete(struct_date[i])
 				db.session.commit()
 				break
 		except IndexError:
