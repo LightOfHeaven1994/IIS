@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
 	username = db.Column(db.String(20), unique=True, nullable=False)
 	email = db.Column(db.String(60), unique=True, nullable=False)
 	password = db.Column(db.String(60), nullable=False)
-	profile_picture = db.Column(db.String(20), nullable=False, default='default.jpg')
+	profile_picture = db.Column(db.String(20), nullable=False, default='default/default.jpg')
 	role = db.Column(db.String(20), nullable=False, default='User')
 	tickets = db.relationship('Ticket')
 
@@ -21,8 +21,7 @@ class User(db.Model, UserMixin):
 		return f"User('{self.username}', '{self.email}', '{self.role}', '{self.profile_picture}')"
 
 
-ticket_seat = db.Table('ticket_seat', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
-	db.Column('ticket_id', db.Integer, db.ForeignKey('ticket.id')),
+ticket_seat = db.Table('ticket_seat', db.Column('ticket_id', db.Integer, db.ForeignKey('ticket.id')),
 	db.Column('seat_id', db.Integer, db.ForeignKey('seat.id')),
 	)
 

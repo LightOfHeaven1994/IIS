@@ -392,14 +392,10 @@ def delete_event(event_id):
 @login_required
 def delete_reservation(ticket_id):
 	ticket = Ticket.query.get_or_404(ticket_id)
+	print(ticket.tickets_on_seat)
+	ticket.tickets_on_seat.clear()
+	db.session.commit()
+	db.session.delete(ticket)
+	db.session.commit()
 
-	# for seat in ticket.tickets_on_seat:
-	# 	print(seat.is_busy)
-	# 	seat.is_busy = ""
-	# 	print(seat.is_busy)
-	# 	db.session.commit()
-
-	# db.session.delete(ticket)
-	# db.session.commit()
-
-	return redirect(url_for('about'))
+	return redirect(url_for('account'))
