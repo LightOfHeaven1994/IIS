@@ -312,7 +312,7 @@ def event(event_id, hall_color, event_time):
 		if not current_user.is_authenticated:
 			flash('Before reservation you need to create account', 'warning')
 			return redirect(url_for('register'))
-
+		print(request.form)
 		print("\n\nSeats:")
 		if request.form.getlist('seat'):
 			seats = request.form.getlist('seat')
