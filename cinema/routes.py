@@ -311,7 +311,6 @@ def event(event_id, hall_color, event_time):
 	#Todo very slow implementation. We lose like a second or two to the cycles here.
 	for seat in Seat.query.all():
 		found=False
-		print(tickets)
 		if not tickets:
 			seat.is_busy = ""
 			db.session.commit()
@@ -387,3 +386,20 @@ def delete_event(event_id):
 	db.session.commit()
 	flash('Your event has been deleted!', 'success')
 	return redirect(url_for('program'))
+
+
+@app.route('/account/deletereservation/<int:ticket_id>', methods=['GET', 'POST'])
+@login_required
+def delete_reservation(ticket_id):
+	ticket = Ticket.query.get_or_404(ticket_id)
+
+	# for seat in ticket.tickets_on_seat:
+	# 	print(seat.is_busy)
+	# 	seat.is_busy = ""
+	# 	print(seat.is_busy)
+	# 	db.session.commit()
+
+	# db.session.delete(ticket)
+	# db.session.commit()
+
+	return redirect(url_for('about'))

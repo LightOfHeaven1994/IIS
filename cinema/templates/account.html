@@ -1,90 +1,153 @@
 {% extends "layout.html" %}
 {% block content %}
+  <style>
+    .nav-link{
+      color:#000;
+    }
+    h4:hover { color: blue; }
+    .tab-content {
+      padding: 20px;
+    }
+  </style>
   <div class="content-section">
     <div class="media">
       <img class="rounded-circle account-img" src="{{ profile_picture }}">
       <div class="media-body">
         <h2 class="account-heading">{{ current_user.username }}</h2>
         <p class="test-secondary">{{ current_user.email }}</p>
-        <p class="test-secondary">{{ current_user.role }}
+        <p class="test-secondary"><b>My role:</b> {{ current_user.role }}
       </div>
   </div>
     <form method="POST" action="" enctype="multipart/form-data">
-      {{ form.hidden_tag() }}
-      <fieldset class="form-group">
-        <legend class="border-bottom mb-4">Account Info</legend>
-        <div class="form-group">
-          {{ form.username.label(class="form-control-label") }}
+      <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+        <li class="nav-item waves-effect waves-light">
+          <a class="nav-link active" id="my_reservations-tab" data-toggle="tab" href="#my_reservations" role="tab" aria-controls="my_reservations" aria-selected="false"> My reservations </a>
+        </li>
+        <li class="nav-item waves-effect waves-light">
+          <a class="nav-link" id="account_details-tab" data-toggle="tab" href="#account_details" role="tab" aria-controls="account_details" aria-selected="false"> Account details </a>
+        </li>
+      </ul>
 
-          {% if form.username.errors %}
-            {{ form.username(class="form-control form-control-lg is-invalid") }}
-              <div class="invalid-feedback">
-              {% for error in form.username.errors %}
-                <span>{{ error }}</span>
-              {% endfor %}
-              </div>
+      <div class="tab-content" id="UserContent">
+        <div class="tab-pane in active" id="my_reservations" role="tabpanel" aria-labelledby="my_reservations-tab">
+          {% if current_user.tickets %}
+            List of your reservations:
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Event</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Hall</th>
+                  <th scope="col">Seats</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">X</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ticket in current_user.tickets %}
+                  <tr>
+                    <th scope="row">{{ ticket.id }}</th>
+                    <td>{{ ticket.event }}</td>
+                    <td>{{ ticket.date.date }}</td>
+                    <td>{{ ticket.hall.hall_name }}</td>
+                    <td>
+                      {% for seat in ticket.tickets_on_seat %}
+                        <p>Row: {{ seat.row }} Num: {{ seat.number }}</p>
+                      {% endfor %}
+                    </td>
+                    <td>{{ ticket.price }}</td>
+                    <td>
+                      <a class="btn btn-sm btn-outline-danger" href="{{ url_for('delete_reservation', ticket_id=ticket.id) }}">X</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           {% else %}
-            {{ form.username(class="form-control form-control-lg") }}
+            You don't have reservations yet
           {% endif %}
-
         </div>
-        <div class="form-group">
-          {{ form.email.label(class="form-control-label") }}
-          
-          {% if form.email.errors %}
-            {{ form.email(class="form-control form-control-lg is-invalid")}}
-            <div class="invalid-feedback">
-              {% for error in form.email.errors %}
-                <span>{{ error }}</span>
-              {% endfor %}
+        <div class="tab-pane fade" id="account_details" role="tabpanel" aria-labelledby="account_details-tab">
+          {{ form.hidden_tag() }}
+          <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Account Info</legend>
+            <div class="form-group">
+              {{ form.username.label(class="form-control-label") }}
+
+              {% if form.username.errors %}
+                {{ form.username(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                  {% for error in form.username.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                  </div>
+              {% else %}
+                {{ form.username(class="form-control form-control-lg") }}
+              {% endif %}
+
             </div>
-          {% else %}
-            {{ form.email(class="form-control form-control-lg") }}
-          {% endif %}
+            <div class="form-group">
+              {{ form.email.label(class="form-control-label") }}
+              
+              {% if form.email.errors %}
+                {{ form.email(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                  {% for error in form.email.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.email(class="form-control form-control-lg") }}
+              {% endif %}
 
-        </div>
-        <div class="form-group">
-          {{ form.password.label(class="form-control-label") }}
-          
-          {% if form.password.errors %}
-            {{ form.password(class="form-control form-control-lg is-invalid")}}
-            <div class="invalid-feedback">
-              {% for error in form.password.errors %}
-                <span>{{ error }}</span>
-              {% endfor %}
             </div>
-          {% else %}
-            {{ form.password(class="form-control form-control-lg") }}
-          {% endif %}
+            <div class="form-group">
+              {{ form.password.label(class="form-control-label") }}
+              
+              {% if form.password.errors %}
+                {{ form.password(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                  {% for error in form.password.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.password(class="form-control form-control-lg") }}
+              {% endif %}
 
-        </div>
-        <div class="form-group">
-          {{ form.confirm_password.label(class="form-control-label") }}
-                    
-          {% if form.confirm_password.errors %}
-            {{ form.confirm_password(class="form-control form-control-lg is-invalid")}}
-            <div class="invalid-feedback">
-              {% for error in form.confirm_password.errors %}
-                <span>{{ error }}</span>
-              {% endfor %}
             </div>
-          {% else %}
-            {{ form.confirm_password(class="form-control form-control-lg") }}
-          {% endif %}
+            <div class="form-group">
+              {{ form.confirm_password.label(class="form-control-label") }}
+                        
+              {% if form.confirm_password.errors %}
+                {{ form.confirm_password(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                  {% for error in form.confirm_password.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.confirm_password(class="form-control form-control-lg") }}
+              {% endif %}
 
+            </div>
+            <div class="form-group">
+              {{ form.picture.label() }}
+              {{ form.picture(class="form-control-file") }}
+              {% if form.picture.errors %}
+                {% for error in form.picture.errors %}
+                    <span class="text-danger">{{ error }}</span></br>
+                  {% endfor %}
+              {% endif %}
+            </div>
+          </fieldset>
+          <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+          </div>
         </div>
-        <div class="form-group">
-          {{ form.picture.label() }}
-          {{ form.picture(class="form-control-file") }}
-          {% if form.picture.errors %}
-            {% for error in form.picture.errors %}
-                <span class="text-danger">{{ error }}</span></br>
-              {% endfor %}
-          {% endif %}
-        </div>
-      </fieldset>
-      <div class="form-group">
-        {{ form.submit(class="btn btn-outline-info") }}
       </div>
+
+      
     </form>
 {% endblock content %}

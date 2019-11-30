@@ -22,16 +22,21 @@ class User(db.Model, UserMixin):
 
 
 ticket_seat = db.Table('ticket_seat', db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
-	db.Column('date_id', db.Integer, db.ForeignKey('ticket.id')),
-	db.Column('hall_id', db.Integer, db.ForeignKey('seat.id')))
+	db.Column('ticket_id', db.Integer, db.ForeignKey('ticket.id')),
+	db.Column('seat_id', db.Integer, db.ForeignKey('seat.id')),
+	)
 
 class Ticket(db.Model):
 
 	id = db.Column(db.Integer, primary_key=True)
 	price = db.Column(db.Integer, nullable=False)
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	# event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+	# event = db.relationship("Event")
 	hall_id = db.Column(db.Integer, db.ForeignKey('hall.id'))
+	hall = db.relationship("Hall")	# helps us get hall for ticket
 	date_id = db.Column(db.Integer, db.ForeignKey('date.id'))
+	date = db.relationship("Date")	# Helps us get date for ticket
 	tickets_on_seat = db.relationship('Seat', secondary=ticket_seat,
 							backref=db.backref('tickets_on_seat', lazy='dynamic'))
 

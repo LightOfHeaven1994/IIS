@@ -175,7 +175,7 @@ position: relative;
         </div>
             <div class="content-section">
             {% for occassion in occasions %}
-              <p id="occassion;">{{ occassion }}<a class="btn btn-outline-info" href="{{ url_for('child_delete', event_id=event.id, route=occassion) }}">X</a></p>
+              <p id="occassion;">{{ occassion }}<a class="btn btn-sm btn-outline-danger" href="{{ url_for('child_delete', event_id=event.id, route=occassion) }}">X</a></p>
             {% endfor %}
             </div>
       </form>
