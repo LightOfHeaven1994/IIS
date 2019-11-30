@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
 	username = db.Column(db.String(20), unique=True, nullable=False)
 	email = db.Column(db.String(60), unique=True, nullable=False)
 	password = db.Column(db.String(60), nullable=False)
-	profile_picture = db.Column(db.String(20), nullable=False, default='default.jpg')
+	profile_picture = db.Column(db.String(20), nullable=False, default='default/default.jpg')
 	role = db.Column(db.String(20), nullable=False, default='User')
 	tickets = db.relationship('Ticket')
 
