@@ -47,7 +47,7 @@
               <img class="rounded account-img" src="{{ url_for('static', filename='profile_picture/' + date.alldates[0].picture) }}">
               <div class="media-body">
                 <div class="article-metadata">
-                  <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id, hall_color='Green Hall', event_time=date.date) }}">
+                  <a class="mr-2" href="{{ url_for('event', event_id=date.alldates[0].id, hall_color=date.alldates_in_hall[0].hall_name, event_time=date.date) }}">
                     <h4>{{ date.alldates[0].name }}</h4>
                   </a>
                   <p><b>Type:</b> {{ date.alldates[0].event_type }}</p>
