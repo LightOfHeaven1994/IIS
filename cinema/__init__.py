@@ -23,7 +23,7 @@ mail = Mail(app)
 # cinemaserver@seznam.cz
 # iisCinemaServer
 
-from cinema import routes
+from cinema import routes, errors
 
 
 
