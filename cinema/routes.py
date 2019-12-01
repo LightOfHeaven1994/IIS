@@ -603,7 +603,8 @@ def reset_token(token):
 @login_required
 def manage_reservations():
 	form = ManageUsers()
-
+	if current_user.role not in ["Admin", "Redactor", "Cashier"]:
+		abort(403)
 	events = Event.query.all()
 	users = User.query.all()
 	dates = Date.query.all()
