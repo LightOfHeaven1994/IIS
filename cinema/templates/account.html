@@ -48,7 +48,13 @@
                 {% for ticket in current_user.tickets %}
                   <tr>
                     <th scope="row">{{ ticket.id }}</th>
-                    <td>{{ ticket.event }}</td>
+                    <td>
+                      {% for date in dates %}
+                        {% if date.date == ticket.date.date %}
+                          {{ date.alldates[0].name }}
+                        {% endif %}
+                      {% endfor %}
+                    </td>
                     <td>
                       {% if ticket.date.date %}
                         {{ ticket.date.date }}
