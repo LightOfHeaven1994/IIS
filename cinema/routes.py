@@ -27,9 +27,10 @@ def about():
 @app.route('/program')
 def program():
 	form = ShowEvents()
-	dates = Date.query.order_by(asc(Date.date))
+	page = request.args.get('page', 1, type=int)
+	dates = Date.query.order_by(asc(Date.date)).paginate(page=page, per_page=5)
 
-	events = Event.query.all()
+	events = Event.query.all() #paginate(page=page, per_page=5)
 	halls = Hall.query.all()
 	all_halls=[]
 	for hall in halls:
@@ -180,10 +181,11 @@ def create_event():
 	picture_file = url_for('static', filename='profile_picture/default/default_event.jpg')	# default picture for first time
 	if form.validate_on_submit():
 		try:
+			event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
+				language=form.language.data, age_restriction=form.age_restriction.data, description=form.description.data)
 			if form.picture.data:	
 				picture_file = upload_picture(form.picture.data, True)
-			event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
-				language=form.language.data, age_restriction=form.age_restriction.data, description=form.description.data, picture=picture_file)
+				event.picture_file = picture_file
 			db.session.add(event)
 			db.session.commit()
 			flash('Created successfully', 'success')
@@ -426,6 +428,18 @@ def delete_event(event_id):
 	event = Event.query.get_or_404(event_id)
 	if current_user.role != "Admin" and current_user.role != "Redactor":
 		abort(403)
+	dates = Date.query.all()
+	delete_date = []
+	if dates:
+		for date in dates:
+			if date.alldates[0].name == event.name:
+				delete_date.append(date)
+	
+
+	for date in delete_date:
+		Date.query.filter_by(id=date.id).delete()
+	db.session.commit()
+
 	db.session.delete(event)
 	db.session.commit()
 	flash('Your event has been deleted!', 'success')
