@@ -6,9 +6,9 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from cinema import app, db, bcrypt, mail
 from cinema.models import User, Event, Date, event_hall, Hall, Seat, Ticket
-from cinema.forms import (RegistrationForm, LoginForm, UpdateAccountForm, 
-	EditUser,DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate, 
-	DeleteChild, ReserveForUser, RequestResetForm, ResetPasswordForm)
+from cinema.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
+	EditUser,DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate,
+	DeleteChild, ReserveForUser, RequestResetForm, ResetPasswordForm, AccountlessReservation)
 from cinema.models import User, Event, Date, event_hall, Hall
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy import desc, asc
@@ -266,7 +266,7 @@ def event_Parent(event_id):
 			halls = event.halls_of_event.all()
 			occasions=[]
 			for hall,date in zip(halls,dates):
-				occasions.append(hall.hall_name+"&"+date.date)
+				occasions.append(hall.hall_name+"@"+date.date)
 			event_picture = url_for('static', filename='profile_picture/' + event.picture)
 			return render_template('event.html', form=form, event=event, occasions=occasions, picture=event_picture, parent=parent,delform=delform )
 	else:
@@ -274,7 +274,7 @@ def event_Parent(event_id):
 		dates = event.dates_of_event.all()
 		occasions = []
 		for hall, date in zip(halls, dates):
-			occasions.append(hall.hall_name + "&" + date.date)
+			occasions.append(hall.hall_name + "@" + date.date)
 		event_picture = url_for('static', filename='profile_picture/' + event.picture)
 		if dates and halls:
 			return render_template('event.html', name=event.name, event=event, occasions=occasions, form=form, picture=event_picture, parent=parent, delform=delform)
@@ -284,7 +284,7 @@ def event_Parent(event_id):
 
 @app.route('/program/<int:event_id>/<string:route>',methods=['GET','POST'])
 def child_delete(event_id, route):
-	route=route.split("&")	# route[0] is deleted hall,  route[1] is deleted time
+	route=route.split("@")	# route[0] is deleted hall,  route[1] is deleted time
 
 	event=Event.query.filter(Event.id==event_id).first()
 	all_halls = event.halls_of_event.all()
@@ -306,19 +306,51 @@ def child_delete(event_id, route):
 def event(event_id, hall_color, event_time):
 	form=CreateDate()
 	form_ReserveForUser = ReserveForUser()
+	reserveform=AccountlessReservation()
 	event = Event.query.get_or_404(event_id)
 	hall_name = Hall(hall_name=form.hall.data)
 	halls = hall_name.dates_for_hall
 	dates = event.dates_of_event
 	seats_status = []
 
-	if form.validate_on_submit() or (form_ReserveForUser.validate_on_submit() and request.form_ReserveForUser['inputEmail']):
-		print(form.validate_on_submit())
-		if not current_user.is_authenticated:
-			flash('Before reservation you need to create account', 'warning')
+	if reserveform.login.data or reserveform.register.data or reserveform.finish.data:
+		if reserveform.login.data:
+			return redirect(url_for('login'))
+		elif reserveform.register.data:
 			return redirect(url_for('register'))
-		print(request.form)
-		print("\n\nSeats:")
+		elif reserveform.email.data:
+			if request.form.getlist('seat'):
+				seats = request.form.getlist('seat')
+				# get indexes for reservation
+				row_number = []
+				for seat in seats:
+					row_number.append(re.split(r'_', seat))
+				ticket=Ticket(price=len(seats)*120,email=reserveform.email.data)
+
+				db.session.add(ticket)
+				all_seats = Seat.query.all()
+				hall = Hall.query.filter(Hall.hall_name == hall_color).first()
+				date = Date.query.filter(Date.date == event_time).first()
+				for index in row_number:
+					for seat in all_seats:
+						if int(index[0]) == seat.row and int(index[1]) == seat.number:
+							seat.is_busy = "disabled"
+							seat.tickets_on_seat.append(ticket)
+							ticket.date_id = date.id
+							ticket.hall_id = hall.id
+							print(ticket.id)
+							db.session.add(seat)
+							break;
+				if reserveform.validate_on_submit():
+					db.session.commit()
+					flash('Reserved successfully', 'success')
+					return redirect(url_for('program'))
+				else:
+					flash('Please input a valid email address.','danger')
+		else:
+			flash("Authentication or email necessary.",'danger')
+	elif form_ReserveForUser.validate_on_submit() and form_ReserveForUser.search_user.data:
+		user=User.query.filter(User.email==form_ReserveForUser.search_user.data).first()
 		if request.form.getlist('seat'):
 			seats = request.form.getlist('seat')
 			print(seats)
@@ -326,32 +358,63 @@ def event(event_id, hall_color, event_time):
 			row_number = []
 			for seat in seats:
 				row_number.append(re.split(r'_', seat))
-
 			all_seats = Seat.query.all()
-			ticket = Ticket(price=len(seats)*120, user_id=current_user.id )	# let's define prices for halls?
-			#TODO add all seats of a ticket here later
-			db.session.add(ticket)
-			db.session.commit()
 
-			db.session.add(current_user)
-			hall=Hall.query.filter(Hall.hall_name==hall_color).first()
-			date=Date.query.filter(Date.date==event_time).first()
+			if user:
+				ticket = Ticket(price=len(seats) * 120, user_id=user.id)
+			else:
+				ticket=Ticket(price=len(seats)*120,email=form_ReserveForUser.search_user.data)
+			db.session.add(ticket)
+			hall = Hall.query.filter(Hall.hall_name == hall_color).first()
+			date = Date.query.filter(Date.date == event_time).first()
 			for index in row_number:
 				for seat in all_seats:
 					if int(index[0]) == seat.row and int(index[1]) == seat.number:
 						seat.is_busy = "disabled"
 						seat.tickets_on_seat.append(ticket)
 						ticket.date_id = date.id
-						ticket.hall_id=hall.id
-						print("TRY ADD TICKET")
+						ticket.hall_id = hall.id
 						print(ticket.id)
 						db.session.add(seat)
 						break;
 			db.session.commit()
+			flash('Reserved for: '+form_ReserveForUser.search_user.data+' successfully', 'success')
+			return redirect(url_for('program'))
 
+	else:
+		if (form.validate_on_submit() and form.reserve.data):
+			if not current_user.is_authenticated:
+				flash('Before reservation you need to create account', 'warning')
+				return redirect(url_for('register'))
+			if request.form.getlist('seat'):
+				seats = request.form.getlist('seat')
+				print(seats)
+				# get indexes for reservation
+				row_number = []
+				for seat in seats:
+					row_number.append(re.split(r'_', seat))
 
-		flash('Reserved successfully', 'success')
-		return redirect(url_for('program'))
+				all_seats = Seat.query.all()
+				ticket = Ticket(price=len(seats)*120, user_id=current_user.id )	# let's define prices for halls?
+				db.session.add(ticket)
+				db.session.commit()
+
+				#db.session.add(current_user)
+				hall=Hall.query.filter(Hall.hall_name==hall_color).first()
+				date=Date.query.filter(Date.date==event_time).first()
+				for index in row_number:
+					for seat in all_seats:
+						if int(index[0]) == seat.row and int(index[1]) == seat.number:
+							seat.is_busy = "disabled"
+							seat.tickets_on_seat.append(ticket)
+							ticket.date_id = date.id
+							ticket.hall_id=hall.id
+							print(ticket.id)
+							db.session.add(seat)
+							break;
+				db.session.commit()
+			flash('Reserved successfully', 'success')
+			return redirect(url_for('program'))
 
 
 	event_picture = url_for('static', filename='profile_picture/' + event.picture)
@@ -391,7 +454,7 @@ def event(event_id, hall_color, event_time):
 	seats_status.append(row_3)
 
 	return render_template('event.html', name=event.name, event=event, hall=halls, form=form, dates=dates, hall_color=hall_color,
-		picture=event_picture, event_time=event_time, seats_status=seats_status, form_ReserveForUser=form_ReserveForUser)
+		picture=event_picture, event_time=event_time, seats_status=seats_status, form_ReserveForUser=form_ReserveForUser,reserveform=reserveform)
 
 
 @app.route('/program/<int:event_id>/update', methods=['GET', 'POST'])

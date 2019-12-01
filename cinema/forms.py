@@ -101,6 +101,12 @@ class CreateDate(FlaskForm):
 	reserve = SubmitField('Reserve')
 
 
+class AccountlessReservation(FlaskForm):
+	email=StringField(validators=[Email()])
+	login=SubmitField("Log in")
+	register=SubmitField("Register")
+	finish=SubmitField("Finish reservation")
+
 class DeleteChild(FlaskForm):
 	delete = SubmitField('X')
 	record= StringField()
