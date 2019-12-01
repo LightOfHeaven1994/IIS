@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>Manage reservations</h1>
+ 
+  <form method="POST" action="" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <div class="form-group">
+        <div class="form-row">
+          <div class="col">
+            <div class="form-group col-md-12">
+              <h6>Hall</h6>
+              <select id="inputState" {{ form.hall(class="form-control form-control-lg") }})>
+                <option selected> Blue Hall </option>
+                <option selected> Red Hall </option>
+                 <option selected> Green Hall </option>
+              </select>
+            </div>
+          </div>
+          <div class="col">
+            {{ form.date.label(class="form-control-label") }}
+
+            {% if form.date.errors %}
+              {{ form.date(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                {% for error in form.date.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+                </div>
+            {% else %}
+              {{ form.date(class="form-control form-control-lg") }} 
+            {% endif %}
+          </div>
+        </div>
+        <div class="text-right mb-3">
+          {{ form.search(class="btn btn-outline-info") }}
+        </div>
+      </div>
+    </fieldset>
+    
+    <div class="content-section">
+      <table class="table table-striped" style="width:100%">
+        Reservations
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Event</th>
+            <th>Seats</th>
+            <th>X</th>
+          </tr>
+          {% for ticket in tickets %}
+            <tr>
+              <td>#</td>
+              <td>bezdomovec ebany</td>
+              <td>Event name?</td>
+              <td>
+                {% for seat in ticket.tickets_on_seat %}
+                  <p>Row: {{ seat.row }} Num: {{ seat.number }}</p>
+                {% endfor %}
+              </td>
+              <td>
+                <a class="btn btn-sm btn-outline-danger" href="#">X</a>
+              </td>
+            </tr>
+          {% endfor %}
+      </table>
+    </div>
+
+  </form>
+{% endblock content %}
+

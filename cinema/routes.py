@@ -8,7 +8,7 @@ from cinema import app, db, bcrypt, mail
 from cinema.models import User, Event, Date, event_hall, Hall, Seat, Ticket
 from cinema.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
 	EditUser,DeleteUser, ShowEvents, CreateUpdateEvent, CreateDate,
-	DeleteChild, ReserveForUser, RequestResetForm, ResetPasswordForm, AccountlessReservation)
+	DeleteChild, ReserveForUser, RequestResetForm, ResetPasswordForm, ManageUsers, AccountlessReservation)
 from cinema.models import User, Event, Date, event_hall, Hall
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy import desc, asc
@@ -570,3 +570,21 @@ def reset_token(token):
 		flash('Your password has been updated!', 'success')
 		return redirect(url_for('login'))
 	return render_template('reset_token.html', title='Reset Password', form=form)
+
+
+@app.route("/manage_users", methods=['GET', 'POST'])
+@login_required
+def manage_reservations():
+	form = ManageUsers()
+	tickets_to_event = []
+	events = Event.query.all()
+
+	if form.validate_on_submit():
+		tickets = Ticket.query.all()
+		for ticket in tickets:
+			if datetime.strptime(ticket.date.date, '%Y-%m-%d %H:%M:%S') == form.date.data and ticket.hall.hall_name == form.hall.data:
+				tickets_to_event.append(ticket)
+				
+
+		return render_template('manage_users.html', title='Manage users', form=form, tickets=tickets_to_event, events=events)
+	return render_template('manage_users.html', title='Manage users', form=form)
