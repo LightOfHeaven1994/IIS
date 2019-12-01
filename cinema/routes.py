@@ -181,15 +181,17 @@ def create_event():
 	picture_file = url_for('static', filename='profile_picture/default/default_event.jpg')	# default picture for first time
 	if form.validate_on_submit():
 		try:
-			event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
-				language=form.language.data, age_restriction=form.age_restriction.data, description=form.description.data)
-			if form.picture.data:	
-				picture_file = upload_picture(form.picture.data, True)
-				event.picture_file = picture_file
 			time = re.search("^\d+\s(minutes|hours|days)$", form.duration.data)
 			if not time:
 				flash('Wrong duration format, please use: <time> minutes|hours|days', 'danger')
 				return render_template('createevent.html', picture=picture_file, form=form, legend='Create new event')
+			if form.picture.data:	
+				picture_file = upload_picture(form.picture.data, True)
+				event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
+					language=form.language.data, age_restriction=form.age_restriction.data, description=form.description.data, picture=picture_file)
+			else:
+				event = Event(name=form.eventname.data, event_type=form.event_type.data, duration=form.duration.data,
+					language=form.language.data, age_restriction=form.age_restriction.data, description=form.description.data)
 			db.session.add(event)
 			db.session.commit()
 			flash('Created successfully', 'success')
