@@ -37,34 +37,47 @@
         </div>
       </div>
     </fieldset>
-    
+    {% if tickets %}
     <div class="content-section">
       <table class="table table-striped" style="width:100%">
         Reservations
           <tr>
             <th>#</th>
-            <th>Username</th>
+            <th>Email</th>
             <th>Event</th>
             <th>Seats</th>
             <th>X</th>
           </tr>
-          {% for ticket in tickets %}
+          {% for email, ticket in tickets.items() %}
             <tr>
               <td>#</td>
-              <td>bezdomovec ebany</td>
-              <td>Event name?</td>
+              <td>
+                {% if ticket.email %}
+                  {{ ticket.email }}
+                {% else %}
+                  {{ email }}
+                {% endif %}
+              </td>
+              <td>
+                {% for date in dates %}
+                  {% if date.date == ticket.date.date %}
+                    {{ date.alldates[0].name }}
+                  {% endif %}
+                {% endfor %}
+              </td>
               <td>
                 {% for seat in ticket.tickets_on_seat %}
                   <p>Row: {{ seat.row }} Num: {{ seat.number }}</p>
                 {% endfor %}
               </td>
               <td>
-                <a class="btn btn-sm btn-outline-danger" href="#">X</a>
+                <a class="btn btn-sm btn-outline-danger" href="{{ url_for('delete_reservation_by_employee', ticket_id=ticket.id) }}">X</a>
               </td>
             </tr>
           {% endfor %}
-      </table>
-    </div>
+        </table>
+      </div>
+    {% endif %}
 
   </form>
 {% endblock content %}

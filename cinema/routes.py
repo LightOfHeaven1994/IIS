@@ -530,6 +530,19 @@ def delete_reservation(ticket_id):
 	return redirect(url_for('account'))
 
 
+@app.route('/account/deletereservationbyemployee/<int:ticket_id>', methods=['GET', 'POST'])
+@login_required
+def delete_reservation_by_employee(ticket_id):
+	ticket = Ticket.query.get_or_404(ticket_id)
+	print(ticket.tickets_on_seat)
+	ticket.tickets_on_seat.clear()
+	db.session.commit()
+	db.session.delete(ticket)
+	db.session.commit()
+
+	return redirect(url_for('manage_reservations'))
+
+
 def send_reset_email(user):
 	token = user.get_reset_token()
 	msg = Message('Password Reset Request', sender='cinemaserver@seznam.cz', recipients=[user.email])
@@ -576,15 +589,24 @@ def reset_token(token):
 @login_required
 def manage_reservations():
 	form = ManageUsers()
-	tickets_to_event = []
+
 	events = Event.query.all()
+	users = User.query.all()
+	dates = Date.query.all()
+	tmp = {}
 
 	if form.validate_on_submit():
 		tickets = Ticket.query.all()
 		for ticket in tickets:
 			if datetime.strptime(ticket.date.date, '%Y-%m-%d %H:%M:%S') == form.date.data and ticket.hall.hall_name == form.hall.data:
-				tickets_to_event.append(ticket)
+
+				if ticket.user_id == None:
+					tmp[ticket.email] = ticket
+				else:
+					user = User.query.get(ticket.user_id)
+					tmp[user.email] = ticket
+
 				
 
-		return render_template('manage_users.html', title='Manage users', form=form, tickets=tickets_to_event, events=events)
+		return render_template('manage_users.html', title='Manage users', form=form, tickets=tmp, dates=dates, events=events)
 	return render_template('manage_users.html', title='Manage users', form=form)
