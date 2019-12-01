@@ -125,3 +125,9 @@ class ResetPasswordForm(FlaskForm):
 	password = PasswordField('Password', validators=[DataRequired()])
 	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
 	submit = SubmitField('Reset Passwords')
+
+
+class ManageUsers(FlaskForm):
+	hall = StringField('Hall', validators=[DataRequired()])
+	date = DateTimeField('Date',format='%d-%m-%Y %H:%M', validators=[DataRequired()])
+	search = SubmitField('Search')

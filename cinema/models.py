@@ -45,8 +45,6 @@ class Ticket(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	price = db.Column(db.Integer, nullable=False)
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-	# event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
-	# event = db.relationship("Event")
 	hall_id = db.Column(db.Integer, db.ForeignKey('hall.id'))
 	hall = db.relationship("Hall")	# helps us get hall for ticket
 	date_id = db.Column(db.Integer, db.ForeignKey('date.id'))
@@ -113,4 +111,3 @@ class Hall(db.Model):
 
 	def __repr__(self):
 		return f"Hall('{self.hall_name}')"
-
