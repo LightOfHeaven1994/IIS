@@ -21,8 +21,9 @@ class User(db.Model, UserMixin):
 		return f"User('{self.username}', '{self.email}', '{self.role}', '{self.profile_picture}')"
 
 
-ticket_seat = db.Table('ticket_seat', db.Column('ticket_id', db.Integer, db.ForeignKey('ticket.id')),
-	db.Column('seat_id', db.Integer, db.ForeignKey('seat.id')),
+ticket_seat = db.Table('ticket_seat',
+			db.Column('ticket_id', db.Integer, db.ForeignKey('ticket.id')),
+			db.Column('seat_id', db.Integer, db.ForeignKey('seat.id')),
 	)
 
 class Ticket(db.Model):

@@ -186,6 +186,10 @@ def create_event():
 			if form.picture.data:	
 				picture_file = upload_picture(form.picture.data, True)
 				event.picture_file = picture_file
+			time = re.search("^\d+\s(minutes|hours|days)$", form.duration.data)
+			if not time:
+				flash('Wrong duration format, please use: <time> minutes|hours|days', 'danger')
+				return render_template('createevent.html', picture=picture_file, form=form, legend='Create new event')
 			db.session.add(event)
 			db.session.commit()
 			flash('Created successfully', 'success')
@@ -209,10 +213,9 @@ def event_Parent(event_id):
 	if form.validate_on_submit() and form.create.data:
 		hall_name = Hall(hall_name=form.hall.data)
 		date= Date(date=form.date.data)
-
-
 		time=re.search("^\d+(?=\s(minutes|hours|days))",event.duration).group(0)
 		value=re.search("(minutes|hours|days)$",event.duration).group(0)
+
 		if value=="minutes":
 			time=int(time)*60
 		elif value=="hours":
@@ -397,7 +400,7 @@ def update_event(event_id):
 		event.name = form.eventname.data
 		event.event_type = form.event_type.data
 		event.duration = form.duration.data
-		time=re.search("^\d+(?=\s(minutes|hours|days))",event.duration)
+		time=re.search("^\d+\s(minutes|hours|days)$",event.duration)
 		if not time:
 			flash('Wrong duration format, please use: <time> minutes|hours|days','danger')
 		else:
@@ -405,11 +408,11 @@ def update_event(event_id):
 			event.age_restriction = form.age_restriction.data
 			event.description = form.description.data
 
-		if form.picture.data:
-			picture_file = upload_picture(form.picture.data, True)
-			event.picture = picture_file
-		db.session.commit()
-		flash('Your event has been updated!', 'success')
+			if form.picture.data:
+				picture_file = upload_picture(form.picture.data, True)
+				event.picture = picture_file
+			db.session.commit()
+			flash('Your event has been updated!', 'success')
 		return redirect(url_for('event_Parent', event_id=event.id, hall_color='Default', event_time='0000-00-00 00:00'))
 	elif request.method == 'GET':
 		form.eventname.data = event.name
