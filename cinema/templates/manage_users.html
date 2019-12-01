@@ -48,37 +48,39 @@
             <th>Seats</th>
             <th>X</th>
           </tr>
-          {% for email, ticket in tickets.items() %}
-            <tr>
-              <td>#</td>
-              <td>
-                {% if ticket.email %}
-                  {{ ticket.email }}
-                {% else %}
-                  {{ email }}
-                {% endif %}
-              </td>
-              <td>
-                {% for date in dates %}
-                  {% if date.date == ticket.date.date %}
-                    {{ date.alldates[0].name }}
+            {% for info in tickets %}
+              <tr>
+                <td>#</td>
+                <td>
+                  {% if info[1].email %}
+                    {{ info[1].email }}
+                  {% else %}
+                    {{ info[0] }}
                   {% endif %}
-                {% endfor %}
-              </td>
-              <td>
-                {% for seat in ticket.tickets_on_seat %}
-                  <p>Row: {{ seat.row }} Num: {{ seat.number }}</p>
-                {% endfor %}
-              </td>
-              <td>
-                <a class="btn btn-sm btn-outline-danger" href="{{ url_for('delete_reservation_by_employee', ticket_id=ticket.id) }}">X</a>
-              </td>
-            </tr>
-          {% endfor %}
+                </td>
+                <td>
+                  {% for date in dates %}
+                    {% if date.date == info[1].date.date %}
+                      {{ date.alldates[0].name }}
+                    {% endif %}
+                  {% endfor %}
+                </td>
+                <td>
+                  {% for seat in info[1].tickets_on_seat %}
+                    <p>Row: {{ seat.row }} Num: {{ seat.number }}</p>
+                  {% endfor %}
+                </td>
+                <td>
+                  <a class="btn btn-sm btn-outline-danger" href="{{ url_for('delete_reservation_by_employee', ticket_id=info[1].id) }}">X</a>
+                </td>
+              </tr>
+            {% endfor %}
         </table>
       </div>
+    {% else %}
+      <div class="alert alert-secondary" role="alert" align="center">
+        No reservations for this hall and date!
     {% endif %}
-
   </form>
 {% endblock content %}
 

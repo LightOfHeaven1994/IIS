@@ -302,6 +302,19 @@ def child_delete(event_id, route):
 	return redirect(url_for('event_Parent', event_id=event_id))
 
 
+def send_email_with_registration(email, ticket):
+	msg = Message('Your reservation', sender='cinemaserver@seznam.cz', recipients=[email])
+	seats = ''
+	for seat in ticket.tickets_on_seat:
+		seats += f"Row: {seat.row} Number: {seat.number}\n"
+	msg.body = f'''Thank you for your reservation!\n
+Event date: {ticket.date.date}
+Seats: {seats}
+Price: {ticket.price}
+'''
+	mail.send(msg)
+
+
 @app.route('/program/<int:event_id>/<string:hall_color>/<string:event_time>',methods=['GET','POST'])
 def event(event_id, hall_color, event_time):
 	form=CreateDate()
@@ -342,6 +355,7 @@ def event(event_id, hall_color, event_time):
 							db.session.add(seat)
 							break;
 				if reserveform.validate_on_submit():
+					send_email_with_registration(reserveform.email.data, ticket)
 					db.session.commit()
 					flash('Reserved successfully', 'success')
 					return redirect(url_for('program'))
@@ -593,20 +607,22 @@ def manage_reservations():
 	events = Event.query.all()
 	users = User.query.all()
 	dates = Date.query.all()
-	tmp = {}
+	info = []
 
 	if form.validate_on_submit():
 		tickets = Ticket.query.all()
 		for ticket in tickets:
 			if datetime.strptime(ticket.date.date, '%Y-%m-%d %H:%M:%S') == form.date.data and ticket.hall.hall_name == form.hall.data:
-
+				tmp = []
 				if ticket.user_id == None:
-					tmp[ticket.email] = ticket
+					tmp.append(ticket.email)		
 				else:
 					user = User.query.get(ticket.user_id)
-					tmp[user.email] = ticket
+					tmp.append(user.email)
 
+				tmp.append(ticket)
+				info.append(tmp)
 				
 
-		return render_template('manage_users.html', title='Manage users', form=form, tickets=tmp, dates=dates, events=events)
+		return render_template('manage_users.html', title='Manage users', form=form, tickets=info, dates=dates, events=events)
 	return render_template('manage_users.html', title='Manage users', form=form)
