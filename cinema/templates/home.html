@@ -1,10 +1,68 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Events</h1>
+<style>
+  ul.timeline li
+{
+    position: relative;
+   height: 3em;
+    color: #888;
+}
 
-<!-- Section: Live preview -->
-<section>
+ul.timeline li:before
+{
+    content: "";
+    display: inline-block;
+    height: 3em;
+    width: 1px;
+    background: #aaaa;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    left: -11px;
+    top: -0.4em;
+    z-index: -1;
+}
 
+ul.timeline:before
+{
+    content: "●";
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    left: -1em;
+    top: 0.1em;
+    color: #aaa;
+}
 
-</section>
+ul.timeline:after
+{
+    content: "●";
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    left: -1em;
+    top: -1em;
+    color: #aaa;
+}
+</style>
+
+<blockquote class="blockquote text-center">
+  <h1><p class="mb-0">Welcome to our site with events!</p></h1>
+  <footer class="blockquote-footer">If you never try, you’ll never know</footer>
+</blockquote>
+
+<ul class="timeline">
+  <h3><li><span class="badge badge-secondary badge-pill font-weight-normal">Good atmosphere!</span></li></h3>
+  <h3><li><span class="badge badge-secondary badge-pill font-weight-normal">Different events!</span></li></h3>
+  <h3><li><span class="badge badge-secondary badge-pill font-weight-normal">For all ages!</span></li></h3>
+  <h3><li><span class="badge badge-secondary badge-pill font-weight-normal">Cheap!</span></li></h3>
+</ul>
+<div class="text-center"> 
+  <a class="btn btn btn-outline-success" href="{{ url_for('program') }}">Let's see program!</a>
+</div>
+<div class="text-center"> 
+  <a href="{{ url_for('about') }}">Our contacts</a>
+</div>
 {% endblock content %}
