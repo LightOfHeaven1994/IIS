@@ -1,0 +1,112 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-2" charset="UTF-8"/>
+    <title>Projekt IIS</title>
+    <style type="text/css">
+    	table { border-collapse: collapse; }
+    	td, th { border: 1px solid black; padding: 0.3em 0.5em; text-align: left; }
+    	dt { font-weight: bold; margin-top: 0.5em; }
+    </style>
+</head>
+<body>
+
+<!-- Zkontrolujte prosím nastavení kódování v hlavičce dokumentu 
+     podle použitého editoru -->
+
+<h1>Název zadání (editujte)</h1> <!-- Nahradte názvem svého zadání -->
+
+<dl>
+	<dt>Autoři</dt>
+	<dd>První jméno <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xglosk00@stud.fit.vutbr.cz">xglosk00@stud.fit.vutbr.cz</a> -
+		Deploy na server, praca s databázou a medzivrstvou
+	</dd>
+	<dd>Druhé jméno <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xshama00@stud.fit.vutbr.cz">xshama00@stud.fit.vutbr.cz</a> - 
+		Frontend, databáza, medzivrstva
+	</dd>
+  <dd>Třetí jméno <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xabike00@stud.fit.vutbr.cz">xabike00@stud.fit.vutbr.cz</a> - 
+		Návrh, frontend, stylizing, databáza
+	</dd>
+	<dt>URL aplikace</dt>
+	<dd><a href="http://34.90.3.32/">http://34.90.3.32/</a></dd>
+	<dd>(http://34.90.3.32/home)</dd>
+</dl>
+
+<h2>Uživatelé systému pro testování</h2>
+<p>Uveďte prosím existující zástupce <strong>všech rolí uživatelů</strong>.</p>
+<table>
+<tr><th>Login (email)</th><th>Heslo</th><th>Role</th></tr>
+<tr><td>admin@admin.com</td><td>admin</td><td>Admin</td></tr>
+<tr><td>redactor@redactor.com</td><td>redactor</td><td>Redactor</td></tr>
+<tr><td>cashier@cashier.com</td><td>cashier</td><td>Cashier</td></tr>
+<tr><td>user1@user1.com</td><td>user1</td><td>User</td></tr>
+<tr><td>user2@user2.com</td><td>user2</td><td>User</td></tr>
+</table>
+
+<h2>Implementace</h2>
+<p>Stručná dokumentace k implementaci, která popisuje, které části projektu (např. PHP skripty) implementují jednotlivé případy použití.</p>
+<p>Pre projekt sme použili Python3 a k nemu framework Flask. Ako databázu sme použili SQLAlchemy. <b>models.py</b> tvorí kostru databázu, a sú tu definované objekty
+pre entity ako je User, Ticket, Event... . <b>routes.py</b> funguje ako medzivrstva medzi databázou a frontendom. Je rozdelený do ciest pre stránky, ktoré v sebe majú
+logiku pre manipuláciu dát v databáze. Táto logika je naviazaná na frontend ktorý je tvorený pomocou JS Frameworku <b>Bootstrap</b> a samotného HTML5. Pre prácu s
+Bootstrapom máme definované rôzne formy v súbori <b>forms.py</b>. Samotné kostry stránok sa nachádzajú v priečinku templates, a dedia štýl od hlavnej stránky <b>layout.html</b> 
+Pri prípade chyby sa aplikácia odkazuje na funkcie v súbore <b>errors.py</b></p>
+
+<h2>Nadštandardná implementácia</h2>
+<p>Aplikácia podporuje nahrávanie a zobrazovanie obrázkov. Na začiatku má udalosť alebo užívateľ priradený defaultný obrázok ktorý si môže zmeniť. Odkaz na obrázok sa uloží
+    do databázi s pseudonáhodne vygenerovaným menom, a uloží sa do zložky static.
+</p>
+<p>Naďalej je implemtované interaktívne rezervácie stoličiek na udalosti, 
+    kde uživateľ vidí ktoré stoličky sú volné, kde v sále sa nachádzajú a môže si ich zarezervovať kliknutím.</p>
+<p>Využitie mailového serveru pre obnovenie zabudnutého hesla. Obnova zabudnutého hesla prebieha pomocou odoslania emailu užívatelovi s odkazom v ktorom je vygenerovaný "token".
+    tento token má určitú životnosť po ktorej sa stane neplatným a užívatelovi sa heslo nezmení. Taktiež mailový server využívame pri odosielaní potvrdení o rezervácií stoličiek
+    nezaregistrovaným uživateľom.
+</p>    
+
+<h3>Databáze</h3>
+
+<image src="cinema/static/profile_picture/default/erd.png" width="500" height="500"></image>
+
+<h2>Instalace</h2>
+
+Stručně popište: 
+<ul>
+<li>Pre server je použitý Virtual Machine od služby Google Cloud, na ktorom sme spustili operačný systém ubuntu. Naďalej sme stiahli a nakonfigurovali nginx webový server
+ , ktorý zbiera trafiku z localhost. Následovne sme nainštalovali server Gunicorn3 ktorý s nginx komunikuje. Potom sme aplikáciu spustili pomocou <b>gunicorn3 run:app</b> v rozhraní tmux
+ ktorý umožňuje mať proces spustený aj po ukončení ssh spojenia.
+
+</li>
+<li>Python==3.6.8</li>
+<li>Flask==1.1.1</li>
+<li>Flask-WTF==0.14.2</li>
+<li>Flask-SQLAlchemy==2.4.1</li>
+<li>flask-bcrypt==0.7.1</li>
+<li>flask-login==0.4</li>
+<li>Pillow==6.2.1</li>
+<li>flask-mail==0.9.1
+
+</li>
+<li>To run project:</li>
+<li>        1) Pull repository</li>
+<li>        2) Create virtual environment by using:</li>
+<li>          a) virtualenv folder name</li>
+<li>          b) python3 -m venv *folder name</li>
+<li>        3) use command `souce *folder name*/bin/activate` to activate virtual environment</li>
+<li>        4) use pip install -r requirements.txt for downloading python packages</li>
+ <li>       5) export FLASK_APP=run.py</li>
+<li>        6) flask run to run application</li>
+        
+<li>  NOTE: for using debug mode use command `export FLASK_DEBUG=1`</li>
+</ul>
+
+<h2>Známé problémy</h2>
+<p>Nginx zachytáva príliš veľké súbory ako sú gif,videá a pod. pri uploadovaní fotky, a teda sa to na serveri nedá vyriešiť lebo nginx vypíše chybu ako prvý.</p>
+<p>Nie je implementované vytváranie nových sálov pretože nám neprišlo, že by kino získavalo nové sály moc často keď vôbec. Preto sme sa rozhodli implementovať iné veci.</p>
+<p>databaza vypada jak kokot, takze odmietam ukazat obrazok</p>
+
+</body>
+</html>
