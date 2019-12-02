@@ -28,7 +28,7 @@
       <p class="test-secondary"><b>User email:</b> {{ user_email }}</p>
       <p class="test-secondary"><b>User role:</b> {{ user_role }}</p>
       <div class="text-right mb-3">
-        {% if user_name != "admin" %}
+        {% if current_user.role != "Admin" %}
           {{ form.delete(class="btn btn-outline-danger") }}
         {% else %}
           <button type="button" class="btn btn-outline-danger" disabled>Delete</button>

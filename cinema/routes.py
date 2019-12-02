@@ -148,7 +148,7 @@ def edit_user():
 				return render_template('edituser.html', form=form)
 		except KeyError:
 			pass
-		return render_template('edituser.html', user_name=user_name, user_email=user.email, form=form,user_role=user.role)
+		return render_template('edituser.html', user_name=user_name, user_email=user.email, form=form, user_role=user.role)
 
 	return render_template('edituser.html', form=form)
 
@@ -207,7 +207,10 @@ def create_event():
 
 
 @app.route('/program/<int:event_id>',methods=['GET','POST'])
+@login_required
 def event_Parent(event_id):
+	if current_user.role not in ["Admin", "Redactor"]:
+		abort(403)
 	form=CreateDate()
 	delform=DeleteChild()
 	parent=True

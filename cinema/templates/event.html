@@ -74,14 +74,12 @@
               <p><b>Type:</b> {{ event.event_type }}</p>
               <p><b>Duration:</b> {{ event.duration }}</p>
               <p><b>Age Restriction:</b> {{ event.age_restriction }}+</p>
-              {% if current_user.role == "User" %}
                 {% for date in dates %}
                   {% if date.alldates[0].id == event.id and hall_color == date.alldates_in_hall[0].hall_name and event_time == date.date %}
                     <p><b>Time:</b> {{ date.date }}</p>
                     <p><b>Hall:</b> {{ date.alldates_in_hall[0].hall_name }}</p>
                   {% endif %}
                 {% endfor %}
-              {% endif %}
             </td>
               {% if current_user.role == "Admin" or current_user.role == "Redactor" %}
                 <td>
@@ -151,8 +149,8 @@
           {% elif current_user.role in ["User", "Redactor"] %}
             {{ form.reserve(class="btn float-right btn-outline-success") }}
           {% else %}
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#accountlessReg">
-                Reserve
+            <button type="button" class="btn btn-outline-success float-right" data-toggle="modal" data-target="#accountlessReg">
+              Reserve
             </button>
             <!-- Modal -->
             <div class="modal fade" id="accountlessReg" tabindex="-1" role="dialog" aria-labelledby="accountlessRegCenterTitle" aria-hidden="true">

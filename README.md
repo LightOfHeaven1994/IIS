@@ -1,7 +1,7 @@
 # IIS
 Project IIS
 
-For run project:
+To run project:
 1) Pull this repository
 2) Create virtual environment by using:
   a) `virtualenv *folder name*`

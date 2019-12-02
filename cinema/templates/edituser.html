@@ -29,7 +29,7 @@
       <p class="test-secondary"><b>User role:</b></p>
           <select id="inputState" {{ form.role(class="form-control input-sm") }})>
               <option {% if user_role=="Admin"%} selected {% endif %} >Admin </option>
-              {% if user_name != "admin" %}
+              {% if current_user.role != "Admin" %}
                 <option {% if user_role=="Redactor"%} selected {% endif %} >Redactor</option>
                 <option {% if user_role=="Cashier"%} selected {% endif %} >Cashier</option>
                 <option {% if user_role=="User"%} selected {% endif %} >User</option>
