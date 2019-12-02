@@ -30,15 +30,17 @@
             <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
           </div>
           <div class="navbar-nav">
-            {% if current_user.role == "Admin" %} <!-- Admin can manage users -->
+            {% if current_user.role == "Admin" or current_user.role == "Cashier" %} <!-- Admin can manage users -->
               <div class="dropdown show">
               <a class="btn dropdown-toggle" style="color:#cbd5db" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Manage users
               </a>
               <div class="dropdown-menu bg-dark" aria-labelledby="dropdownMenuLink">
                 <a class="dropdown-item" style="color:#cbd5db" href="{{ url_for('manage_reservations') }}">Manage reservations</a>
-                <a class="dropdown-item" style="color:#cbd5db" href="{{ url_for('edit_user') }}">Edit user</a>
-                <a class="dropdown-item" style="color:#cbd5db" href="{{ url_for('delete_user') }}">Delete user</a>
+                {% if current_user.role == "Admin" %}
+                  <a class="dropdown-item" style="color:#cbd5db" href="{{ url_for('edit_user') }}">Edit user</a>
+                  <a class="dropdown-item" style="color:#cbd5db" href="{{ url_for('delete_user') }}">Delete user</a>
+                {% endif %}
               </div>
             </div>
             {% endif %}

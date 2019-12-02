@@ -608,7 +608,7 @@ def reset_token(token):
 @login_required
 def manage_reservations():
 	form = ManageUsers()
-	if current_user.role not in ["Admin", "Redactor", "Cashier"]:
+	if current_user.role not in ["Admin", "Cashier"]:
 		abort(403)
 	events = Event.query.all()
 	users = User.query.all()
@@ -616,6 +616,10 @@ def manage_reservations():
 	info = []
 
 	if form.validate_on_submit():
+		if form.date.data < datetime.today():
+			flash('You cannot search reservations in past', 'danger')
+			return render_template('manage_users.html', title='Manage users', form=form)
+
 		tickets = Ticket.query.all()
 		for ticket in tickets:
 			if datetime.strptime(ticket.date.date, '%Y-%m-%d %H:%M:%S') == form.date.data and ticket.hall.hall_name == form.hall.data:

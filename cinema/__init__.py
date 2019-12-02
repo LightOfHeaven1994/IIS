@@ -31,6 +31,7 @@ from cinema import routes, errors
 
 
 # CREATE EVERYTHING FOR US.@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 from cinema.models import User, Event, Hall, Seat
 
 db.drop_all()
@@ -59,16 +60,24 @@ for y in range(1, 4):
 		db.session.add(seat)
 
 hashed_password = bcrypt.generate_password_hash("admin").decode('utf-8')  # hash password for user
-user = User(username="admin", email="admin@admin.com", password=hashed_password, role="Admin")
-db.session.add(user)
+admin = User(username="admin", email="admin@admin.com", password=hashed_password, role="Admin")
+db.session.add(admin)
 
-hashed_password = bcrypt.generate_password_hash("test").decode('utf-8')  # hash password for user
-user_1 = User(username="test", email="test@test.com", password=hashed_password, role="User")
+hashed_password = bcrypt.generate_password_hash("user1").decode('utf-8')  # hash password for user
+user_1 = User(username="user1", email="user1@user1.com", password=hashed_password, role="User")
 db.session.add(user_1)
 
-hashed_password = bcrypt.generate_password_hash("cashier").decode('utf-8')  # hash password for user
-user_2 = User(username="cashier", email="cashier@cashier.com", password=hashed_password, role="Cashier")
+hashed_password = bcrypt.generate_password_hash("user2").decode('utf-8')  # hash password for user
+user_2 = User(username="user2", email="user2@user2.com", password=hashed_password, role="User")
 db.session.add(user_2)
+
+hashed_password = bcrypt.generate_password_hash("cashier").decode('utf-8')  # hash password for user
+cashier = User(username="cashier", email="cashier@cashier.com", password=hashed_password, role="Cashier")
+db.session.add(cashier)
+
+hashed_password = bcrypt.generate_password_hash("redactor").decode('utf-8')  # hash password for user
+redactor = User(username="redactor", email="redactor@redactor.com", password=hashed_password, role="Redactor")
+db.session.add(redactor)
 
 description = '''Nay projecting unpleasing boisterous eat discovered solicitude. Own six moments produce elderly pasture far arrival. 
 Hold our year they ten upon. Gentleman contained so intention sweetness in on resolving.'''
