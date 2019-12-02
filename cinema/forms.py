@@ -77,7 +77,7 @@ class DeleteUser(FlaskForm):
 
 class CreateUpdateEvent(FlaskForm):
 	eventname = StringField('Event name', validators=[DataRequired(), Length(min=3, max=50)])
-	event_type = StringField('Event type', validators=[DataRequired(), Length(min=5, max=50)])
+	event_type = StringField('Event type', validators=[DataRequired(), Length(min=3, max=50)])
 	duration = StringField(validators=[DataRequired(), Length(min=1, max=20)])
 	language = StringField('Language', validators=[DataRequired(), Length(min=2, max=50)])
 	age_restriction = IntegerField(validators=[DataRequired(), NumberRange(min=0, max=18)])
