@@ -30,7 +30,7 @@ from cinema import routes, errors
 
 
 
-# CREATE EVERYTHING FOR US.@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@  INIT  @@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 from cinema.models import User, Event, Hall, Seat
 
@@ -83,7 +83,7 @@ description = '''Chartam ingenii sed scripti fallere res nec caeteri perduci vis
 extitisse quadratam pertinent. Fecto dubio major jam lor operi miror falsi. Ab automata deveniri facturum 
 formemus tollitur si cogitare eo. Ab virorum reliqui at haustam me dicitur ex. '''
 
-event = Event(name ="Fifty shades of IIS", event_type="Presentation", duration="30 minutes", language="kz", age_restriction=18, description=description)
+event = Event(name ="American history", event_type="Film", duration="120 minutes", language="en", age_restriction=18, description=description)
 db.session.add(event)
 
 db.session.commit()
