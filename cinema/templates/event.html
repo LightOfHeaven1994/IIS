@@ -51,6 +51,15 @@
         border: 2px solid #34495E;
     }
 
+    #square {
+        /*text-align: center*/
+        margin-left: 150px;
+        width: 740px;
+        height: 30px;
+        background: grey;
+        border-style: dotted;
+    }
+
   </style>
   <div class="media-body">
     <div class="article-metadata">
@@ -65,7 +74,7 @@
               <p><b>Type:</b> {{ event.event_type }}</p>
               <p><b>Duration:</b> {{ event.duration }}</p>
               <p><b>Age Restriction:</b> {{ event.age_restriction }}+</p>
-              {% if current_user.role == "User"%}
+              {% if current_user.role == "User" %}
                 {% for date in dates %}
                   {% if date.alldates[0].id == event.id and hall_color == date.alldates_in_hall[0].hall_name and event_time == date.date %}
                     <p><b>Time:</b> {{ date.date }}</p>
@@ -102,6 +111,7 @@
 {% if not parent %}
 
   <!-- Select by HALL -->
+  <div id="square" align="center"><b>Screen</b></div>
   <form method="POST" action="">
     <table class="table table-borderless" >
       <tr align="center">

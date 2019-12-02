@@ -216,7 +216,10 @@ def event_Parent(event_id):
 	if delform.validate_on_submit() and delform.delete.data:
 		pass
 	if form.validate_on_submit() and form.create.data:
+		conflict_old_time = True
 		hall_name = Hall(hall_name=form.hall.data)
+		if form.date.data < datetime.today():
+			conflict_old_time=False
 		date= Date(date=form.date.data)
 		time=re.search("^\d+(?=\s(minutes|hours|days))",event.duration).group(0)
 		value=re.search("(minutes|hours|days)$",event.duration).group(0)
@@ -248,7 +251,7 @@ def event_Parent(event_id):
 					conflict=False
 					break
 
-		if not conflict:
+		if not conflict and conflict_old_time:
 			date.end_date=date.date+timedelta(seconds=time)
 			db.session.add(date)
 			db.session.add(hall_name)
@@ -258,6 +261,8 @@ def event_Parent(event_id):
 			event.halls_of_event.append(hall_name)
 			db.session.commit()
 			flash('Added successfully', 'success')
+		elif not conflict_old_time:
+			flash('You cannot create event in past', 'danger')
 		else:
 			flash("There isn't an available timeslot for the event.",'danger')
 
