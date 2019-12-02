@@ -26,9 +26,13 @@
     {% if user_name %}
       <p class="test-secondary"><b>User name:</b> {{ user_name }}</p>
       <p class="test-secondary"><b>User email:</b> {{ user_email }}</p>
-      <p class="test-secondary"><b>User role:</b>{{ user_role }}</p>
+      <p class="test-secondary"><b>User role:</b> {{ user_role }}</p>
       <div class="text-right mb-3">
-        {{ form.delete(class="btn btn-outline-danger") }}
+        {% if user_name != "admin" %}
+          {{ form.delete(class="btn btn-outline-danger") }}
+        {% else %}
+          <button type="button" class="btn btn-outline-danger" disabled>Delete</button>
+        {% endif %}
       </div>
     {% endif %}
   </form>

@@ -27,16 +27,21 @@
       <p class="test-secondary"><b>User name:</b> {{ user_name }}</p>
       <p class="test-secondary"><b>User email:</b> {{ user_email }}</p>
       <p class="test-secondary"><b>User role:</b></p>
-
-        <select id="inputState" {{ form.role(class="form-control input-sm") }})>
-            <option {% if user_role=="Admin"%} selected {% endif %} >Admin </option>
-            <option {% if user_role=="Redactor"%} selected {% endif %} >Redactor</option>
-            <option {% if user_role=="Cashier"%} selected {% endif %} >Cashier</option>
-            <option {% if user_role=="User"%} selected {% endif %} >User</option>
-        </select>
-      <div class="text-right mb-3">
-        {{ form.save(class="btn btn-outline-info") }}
-      </div>
+          <select id="inputState" {{ form.role(class="form-control input-sm") }})>
+              <option {% if user_role=="Admin"%} selected {% endif %} >Admin </option>
+              {% if user_name != "admin" %}
+                <option {% if user_role=="Redactor"%} selected {% endif %} >Redactor</option>
+                <option {% if user_role=="Cashier"%} selected {% endif %} >Cashier</option>
+                <option {% if user_role=="User"%} selected {% endif %} >User</option>
+              {% else %}
+                <option value="Redactor" disabled >Redactor</option>
+                <option value="Cashier" disabled >Cashier</option>
+                <option value="User" disabled >User</option>
+              {% endif %}
+          </select>
+          <div class="text-right mb-3">
+              {{ form.save(class="btn btn-outline-info") }}
+          </div>
     {% endif %}
   </form>
 {% endblock content %}
