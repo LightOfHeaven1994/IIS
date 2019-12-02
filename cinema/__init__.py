@@ -79,10 +79,11 @@ hashed_password = bcrypt.generate_password_hash("redactor").decode('utf-8')  # h
 redactor = User(username="redactor", email="redactor@redactor.com", password=hashed_password, role="Redactor")
 db.session.add(redactor)
 
-description = '''Nay projecting unpleasing boisterous eat discovered solicitude. Own six moments produce elderly pasture far arrival. 
-Hold our year they ten upon. Gentleman contained so intention sweetness in on resolving.'''
+description = '''Chartam ingenii sed scripti fallere res nec caeteri perduci vis. Scriptura inquirere gi co vi 
+extitisse quadratam pertinent. Fecto dubio major jam lor operi miror falsi. Ab automata deveniri facturum 
+formemus tollitur si cogitare eo. Ab virorum reliqui at haustam me dicitur ex. '''
 
-event = Event(name ="No chances even on 5BIT", event_type="Thanks IIS for oznuk", duration="30 minutes", language="kz", age_restriction=18, description=description)
+event = Event(name ="Fifty shades of IIS", event_type="Presentation", duration="30 minutes", language="kz", age_restriction=18, description=description)
 db.session.add(event)
 
 db.session.commit()

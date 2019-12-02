@@ -39,7 +39,6 @@ def program():
 		all_halls.append(hall.hall_name)
 
 	if events:
-		print("SEND DATA")
 		return render_template('program.html', title='program', events=events, dates=dates, halls=all_halls, form=form)
 	else:
 		return render_template('program.html', title='program', halls=all_halls, form=form)
@@ -133,7 +132,6 @@ def edit_user():
 		user_name = form.username.data
 		user_role=form.role.data
 		user = User.query.filter_by(username=user_name).first()
-		print(request.form)
 		try:
 			if request.form['search']:
 				form.role.data = user.role
@@ -359,7 +357,6 @@ def event(event_id, hall_color, event_time):
 							seat.tickets_on_seat.append(ticket)
 							ticket.date_id = date.id
 							ticket.hall_id = hall.id
-							print(ticket.id)
 							db.session.add(seat)
 							break;
 				if reserveform.validate_on_submit():
@@ -375,7 +372,6 @@ def event(event_id, hall_color, event_time):
 		user=User.query.filter(User.email==form_ReserveForUser.search_user.data).first()
 		if request.form.getlist('seat'):
 			seats = request.form.getlist('seat')
-			print(seats)
 			# get indexes for reservation
 			row_number = []
 			for seat in seats:
@@ -396,7 +392,6 @@ def event(event_id, hall_color, event_time):
 						seat.tickets_on_seat.append(ticket)
 						ticket.date_id = date.id
 						ticket.hall_id = hall.id
-						print(ticket.id)
 						db.session.add(seat)
 						break;
 			db.session.commit()
@@ -410,7 +405,6 @@ def event(event_id, hall_color, event_time):
 				return redirect(url_for('register'))
 			if request.form.getlist('seat'):
 				seats = request.form.getlist('seat')
-				print(seats)
 				# get indexes for reservation
 				row_number = []
 				for seat in seats:
@@ -431,7 +425,6 @@ def event(event_id, hall_color, event_time):
 							seat.tickets_on_seat.append(ticket)
 							ticket.date_id = date.id
 							ticket.hall_id=hall.id
-							print(ticket.id)
 							db.session.add(seat)
 							break;
 				db.session.commit()
@@ -543,7 +536,6 @@ def delete_event(event_id):
 @login_required
 def delete_reservation(ticket_id):
 	ticket = Ticket.query.get_or_404(ticket_id)
-	print(ticket.tickets_on_seat)
 	ticket.tickets_on_seat.clear()
 	db.session.commit()
 	db.session.delete(ticket)
@@ -556,7 +548,6 @@ def delete_reservation(ticket_id):
 @login_required
 def delete_reservation_by_employee(ticket_id):
 	ticket = Ticket.query.get_or_404(ticket_id)
-	print(ticket.tickets_on_seat)
 	ticket.tickets_on_seat.clear()
 	db.session.commit()
 	db.session.delete(ticket)
