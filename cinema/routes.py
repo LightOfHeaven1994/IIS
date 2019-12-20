@@ -126,6 +126,9 @@ def account():
 @login_required
 def edit_user():
 	form = EditUser()
+	page = request.args.get('page', 1, type=int)
+	users = User.query.order_by(asc(User.id)).paginate(page=page, per_page=10)
+
 	if current_user.role != "Admin":
 		abort(403)
 	if form.validate_on_submit():
@@ -141,20 +144,24 @@ def edit_user():
 			if request.form['save']:
 				user.role = form.role.data
 				db.session.commit()
+				users = User.query.order_by(asc(User.id)).paginate(page=page, per_page=10)
 				form.username.data = ""
-				flash('Saved successfully', 'success')
-				return render_template('edituser.html', form=form)
+				flash('Updated successfully', 'success')
+				return render_template('edituser.html', form=form, users=users)
 		except KeyError:
 			pass
 		return render_template('edituser.html', user_name=user_name, user_email=user.email, form=form, user_role=user.role)
 
-	return render_template('edituser.html', form=form)
+	return render_template('edituser.html', form=form, users = users)
 
 
 @app.route('/deleteuser', methods=['GET', 'POST'])
 @login_required
 def delete_user():
 	form = DeleteUser()
+	page = request.args.get('page', 1, type=int)
+	users = User.query.order_by(asc(User.id)).paginate(page=page, per_page=10)
+
 	if current_user.role != "Admin":
 		abort(403)
 	if form.validate_on_submit():
@@ -164,13 +171,14 @@ def delete_user():
 			if request.form['delete']:
 				db.session.delete(user)
 				db.session.commit()
+				users = User.query.order_by(asc(User.id)).paginate(page=page, per_page=10)
 				form.username.data = ""
 				flash('Deleted successfully', 'success')
-				return render_template('deleteuser.html', form=form)
+				return render_template('deleteuser.html', form=form, users=users)
 		except KeyError:
 			pass
 		return render_template('deleteuser.html',user_name=user_name, user_email=user.email, user_role=user.role, form=form)
-	return render_template('deleteuser.html', form=form)
+	return render_template('deleteuser.html', form=form, users=users)
 
 
 @app.route('/program/new', methods=['GET', 'POST'])
@@ -552,7 +560,7 @@ def delete_reservation_by_employee(ticket_id):
 	db.session.commit()
 	db.session.delete(ticket)
 	db.session.commit()
-
+	flash('Reservation was deleted!', 'success')
 	return redirect(url_for('manage_reservations'))
 
 
@@ -598,7 +606,7 @@ def reset_token(token):
 	return render_template('reset_token.html', title='Reset Password', form=form)
 
 
-@app.route("/manage_users", methods=['GET', 'POST'])
+@app.route("/manage_reservations", methods=['GET', 'POST'])
 @login_required
 def manage_reservations():
 	form = ManageUsers()
@@ -610,23 +618,40 @@ def manage_reservations():
 	info = []
 
 	if form.validate_on_submit():
-		if form.date.data < datetime.today():
-			flash('You cannot search reservations in past', 'danger')
-			return render_template('manage_users.html', title='Manage users', form=form)
+		if form.date.data:	# Search by name of hall and date
+			search_by_name_time = True
+			if form.date.data < datetime.today():
+				flash('You cannot search reservations in past', 'danger')
+				return render_template('manage_reservations.html', title='Manage users', form=form)
 
-		tickets = Ticket.query.all()
-		for ticket in tickets:
-			if datetime.strptime(ticket.date.date, '%Y-%m-%d %H:%M:%S') == form.date.data and ticket.hall.hall_name == form.hall.data:
-				tmp = []
-				if ticket.user_id == None:
-					tmp.append(ticket.email)		
-				else:
-					user = User.query.get(ticket.user_id)
-					tmp.append(user.email)
+			tickets = Ticket.query.all()
+			for ticket in tickets:
+				if datetime.strptime(ticket.date.date, '%Y-%m-%d %H:%M:%S') == form.date.data and ticket.hall.hall_name == form.hall.data:
+					tmp = []
+					if ticket.user_id == None:
+						tmp.append(ticket.email)		
+					else:
+						user = User.query.get(ticket.user_id)
+						tmp.append(user.email)
 
-				tmp.append(ticket)
-				info.append(tmp)
-				
+					tmp.append(ticket)
+					info.append(tmp)
 
-		return render_template('manage_users.html', title='Manage users', form=form, tickets=info, dates=dates, events=events)
-	return render_template('manage_users.html', title='Manage users', form=form)
+		else:	# Search by hall name
+			search_by_name_time = False
+			tickets = Ticket.query.all()
+			for ticket in tickets:
+				if ticket.hall.hall_name == form.hall.data:
+					tmp = []
+					if ticket.user_id == None:
+						tmp.append(ticket.email)
+					else:
+						user = User.query.get(ticket.user_id)
+						tmp.append(user.email)
+
+					tmp.append(ticket)
+					info.append(tmp)
+		return render_template('manage_reservations.html', title='Manage users', form=form, tickets=info, dates=dates, 
+				events=events, search_by_name_time=search_by_name_time, hall=form.hall.data)
+
+	return render_template('manage_reservations.html', title='Manage users', form=form)

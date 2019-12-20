@@ -28,11 +28,50 @@
       <p class="test-secondary"><b>User email:</b> {{ user_email }}</p>
       <p class="test-secondary"><b>User role:</b> {{ user_role }}</p>
       <div class="text-right mb-3">
-        {% if current_user.role != "Admin" %}
+        {% if user_role.role != "Admin" %}
           {{ form.delete(class="btn btn-outline-danger") }}
         {% else %}
           <button type="button" class="btn btn-outline-danger" disabled>Delete</button>
         {% endif %}
+      </div>
+    {% endif %}
+    {% if users %}
+      <div class="content-section">
+        <table class="table table-striped" style="width:100%">
+          <tr>
+            <th>id</th>
+            <th>User name</th>
+            <th>Email</th>
+            <th>Role</th>
+          </tr>
+          {% for user in users.items %}
+            <tr>
+              <td>
+                <p id="id;">{{ user.id }}</p>
+              </td>
+              <td>
+                <p id="username;">{{ user.username }}</p>
+              </td>
+              <td>
+                <p id="useremail;">{{ user.email }}</p>
+              </td>
+              <td>
+                <p id="userrole;">{{ user.role }}</p>
+              </td>
+            </tr>
+          {% endfor %}
+          {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+              {% if users.page == page_num %}
+                <a class="btn btn-dark mb-4" href="{{ url_for('edit_user', page=page_num) }}">{{ page_num }}</a>
+              {% else %}
+                <a class="btn btn-outline-dark mb-4" href="{{ url_for('edit_user', page=page_num) }}">{{ page_num }}</a>
+              {% endif %}
+            {% else %}
+              ...
+            {% endif %}
+          {% endfor %}
+        </table>
       </div>
     {% endif %}
   </form>

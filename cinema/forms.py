@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateTimeField, TextAreaField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange, Optional
 from cinema.models import User
 
 class RegistrationForm(FlaskForm):
@@ -135,5 +135,5 @@ class ResetPasswordForm(FlaskForm):
 
 class ManageUsers(FlaskForm):
 	hall = StringField('Hall', validators=[DataRequired()])
-	date = DateTimeField('Date',format='%d-%m-%Y %H:%M', validators=[DataRequired()])
+	date = DateTimeField('Date',format='%d-%m-%Y %H:%M', validators=[Optional()])
 	search = SubmitField('Search')

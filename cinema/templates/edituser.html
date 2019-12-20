@@ -29,7 +29,7 @@
       <p class="test-secondary"><b>User role:</b></p>
           <select id="inputState" {{ form.role(class="form-control input-sm") }})>
               <option {% if user_role=="Admin"%} selected {% endif %} >Admin </option>
-              {% if current_user.role != "Admin" %}
+              {% if user_role != "Admin" %}
                 <option {% if user_role=="Redactor"%} selected {% endif %} >Redactor</option>
                 <option {% if user_role=="Cashier"%} selected {% endif %} >Cashier</option>
                 <option {% if user_role=="User"%} selected {% endif %} >User</option>
@@ -40,8 +40,47 @@
               {% endif %}
           </select>
           <div class="text-right mb-3">
-              {{ form.save(class="btn btn-outline-info") }}
+              {{ form.save(class="btn btn-outline-success") }}
           </div>
+    {% endif %}
+    {% if users %}
+      <div class="content-section">
+        <table class="table table-striped" style="width:100%">
+          <tr>
+            <th>id</th>
+            <th>User name</th>
+            <th>Email</th>
+            <th>Role</th>
+          </tr>
+          {% for user in users.items %}
+            <tr>
+              <td>
+                <p id="id;">{{ user.id }}</p>
+              </td>
+              <td>
+                <p id="username;">{{ user.username }}</p>
+              </td>
+              <td>
+                <p id="useremail;">{{ user.email }}</p>
+              </td>
+              <td>
+                <p id="userrole;">{{ user.role }}</p>
+              </td>
+            </tr>
+          {% endfor %}
+          {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+              {% if users.page == page_num %}
+                <a class="btn btn-dark mb-4" href="{{ url_for('edit_user', page=page_num) }}">{{ page_num }}</a>
+              {% else %}
+                <a class="btn btn-outline-dark mb-4" href="{{ url_for('edit_user', page=page_num) }}">{{ page_num }}</a>
+              {% endif %}
+            {% else %}
+              ...
+            {% endif %}
+          {% endfor %}
+        </table>
+      </div>
     {% endif %}
   </form>
 {% endblock content %}
