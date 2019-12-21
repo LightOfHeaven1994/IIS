@@ -12,8 +12,10 @@
 
 	{% if title %}
 		<title> Cinema - {{ title }} </title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	{% else %}
 		<title> Cinema </title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	{% endif %}
 </head>
 <body>
