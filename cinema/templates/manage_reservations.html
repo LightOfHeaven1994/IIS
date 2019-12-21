@@ -120,7 +120,18 @@
                     {% endfor %}
                   </td>
                   <td>
-                    {{ info[1].date.date }}
+
+                 <script>
+                    function addTxt(txt, field)
+                    {
+                    var myTxt = txt;
+                    var id = field;
+                    document.getElementById(id).value = myTxt;
+                    }
+                </script>
+
+
+<p><a href="#" onclick="addTxt('{{ info[1].date.date }}', 'date')">{{ info[1].date.date }}</a></p>
                   </td>
                   <td>
                     {% for seat in info[1].tickets_on_seat %}

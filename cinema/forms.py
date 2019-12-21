@@ -135,5 +135,5 @@ class ResetPasswordForm(FlaskForm):
 
 class ManageUsers(FlaskForm):
 	hall = StringField('Hall', validators=[DataRequired()])
-	date = DateTimeField('Date',format='%d-%m-%Y %H:%M', validators=[Optional()])
+	date = DateTimeField('Date',format='%Y-%m-%d %H:%M:%S', validators=[Optional()])
 	search = SubmitField('Search')

@@ -58,7 +58,19 @@
                 <p id="id;">{{ user.id }}</p>
               </td>
               <td>
-                <p id="username;">{{ user.username }}</p>
+                 <script>
+                    function addTxt(txt, field)
+                    {
+                    var myTxt = txt;
+                    var id = field;
+                    document.getElementById(id).value = myTxt;
+                    }
+                </script>
+
+
+<p><a href="#" onclick="addTxt('{{ user.username }}', 'username')">{{user.username}}</a></p>
+
+
               </td>
               <td>
                 <p id="useremail;">{{ user.email }}</p>
