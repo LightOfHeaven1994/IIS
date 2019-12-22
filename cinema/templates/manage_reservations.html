@@ -41,7 +41,7 @@
               {{ form.date(class="form-control form-control-lg is-invalid") }}
                 <div class="invalid-feedback">
                 {% for error in form.date.errors %}
-                  <span>Wrong time format, please use: D-M-Y H:M</span>
+                  <span>Wrong time format, please use: Y-M-D H:M:S</span>
                 {% endfor %}
                 </div>
             {% else %}
